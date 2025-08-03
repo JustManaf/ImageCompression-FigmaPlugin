@@ -1,0 +1,14 @@
+{
+  "name": "figma-image-compression",
+  "version": "1.0.0",
+  "description": "A working Figma plugin for image compression with proper selection detection",
+  "main": "code.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.116.0",
+    "typescript": "^5.0.0"
+  }
+}

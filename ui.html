@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Image Compression Plugin</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--figma-color-text);
+      background: var(--figma-color-bg);
+      padding: 16px;
+    }
+
+    .header {
+      margin-bottom: 16px;
+    }
+
+    .title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .selection-status {
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      margin-bottom: 16px;
+    }
+
+    .selection-status.has-selection {
+      background: var(--figma-color-bg-success);
+      color: var(--figma-color-text-success);
+      border: 1px solid var(--figma-color-border-success);
+    }
+
+    .selection-status.no-selection {
+      background: var(--figma-color-bg-warning);
+      color: var(--figma-color-text-warning);
+      border: 1px solid var(--figma-color-border-warning);
+    }
+
+    .button {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--figma-color-border);
+      border-radius: 6px;
+      background: var(--figma-color-bg-secondary);
+      color: var(--figma-color-text);
+      font-size: 11px;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .button:hover {
+      background: var(--figma-color-bg-hover);
+    }
+
+    .button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .button.primary {
+      background: var(--figma-color-bg-brand);
+      color: var(--figma-color-text-onbrand);
+      border-color: var(--figma-color-bg-brand);
+    }
+
+    .button.primary:hover {
+      background: var(--figma-color-bg-brand-hover);
+    }
+
+    .images-section {
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--figma-color-text);
+    }
+
+    .images-list {
+      border: 1px solid var(--figma-color-border);
+      border-radius: 6px;
+      background: var(--figma-color-bg);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .image-item {
+      padding: 12px;
+      border-bottom: 1px solid var(--figma-color-border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .image-item:last-child {
+      border-bottom: none;
+    }
+
+    .image-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .image-name {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--figma-color-text);
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: var(--figma-color-text-secondary);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 0;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .remove-btn:hover {
+      color: var(--figma-color-text-danger);
+    }
+
+    .image-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .control-label {
+      font-size: 10px;
+      color: var(--figma-color-text-secondary);
+      font-weight: 500;
+    }
+
+    .control-input {
+      padding: 4px 6px;
+      border: 1px solid var(--figma-color-border);
+      border-radius: 4px;
+      background: var(--figma-color-bg);
+      color: var(--figma-color-text);
+      font-size: 11px;
+    }
+
+    .control-select {
+      padding: 4px 6px;
+      border: 1px solid var(--figma-color-border);
+      border-radius: 4px;
+      background: var(--figma-color-bg);
+      color: var(--figma-color-text);
+      font-size: 11px;
+    }
+
+    .presets-section {
+      margin-bottom: 16px;
+    }
+
+    .presets-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .preset-btn {
+      padding: 8px;
+      border: 1px solid var(--figma-color-border);
+      border-radius: 6px;
+      background: var(--figma-color-bg-secondary);
+      color: var(--figma-color-text);
+      font-size: 10px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .preset-btn:hover {
+      background: var(--figma-color-bg-hover);
+    }
+
+    .preset-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .preset-details {
+      color: var(--figma-color-text-secondary);
+      font-size: 9px;
+    }
+
+    .quality-section {
+      margin-bottom: 16px;
+    }
+
+    .quality-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .quality-label {
+      font-size: 11px;
+      font-weight: 500;
+      min-width: 30px;
+    }
+
+    .quality-slider {
+      flex: 1;
+    }
+
+    .quality-value {
+      font-size: 11px;
+      font-weight: 600;
+      min-width: 35px;
+      text-align: right;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 24px 16px;
+      color: var(--figma-color-text-secondary);
+    }
+
+    .empty-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      opacity: 0.5;
+    }
+
+    .progress-section {
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: var(--figma-color-border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--figma-color-bg-brand);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 11px;
+      color: var(--figma-color-text-secondary);
+      text-align: center;
+    }
+
+    .error-message {
+      background: var(--figma-color-bg-danger);
+      color: var(--figma-color-text-ondanger);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title">Image Compression</div>
+    <div style="color:rgb(0, 0, 0)" id="selectionStatus" class="selection-status no-selection">
+      Please select objects in Figma first
+    </div>
+  </div>
+
+  <div id="errorMessage" class="error-message"></div>
+
+  <div class="presets-section">
+    <div class="section-title">Compression Standards</div>
+    <div class="presets-grid">
+      <button class="preset-btn" onclick="applyPreset('mobile')">
+        <div class="preset-title">Mobile</div>
+        <div class="preset-details">3X • 75% • JPG<br>±180KB</div>
+      </button>
+      <button class="preset-btn" onclick="applyPreset('tablet')">
+        <div class="preset-title">Tablet</div>
+        <div class="preset-details">2X • 75% • JPG<br>±300KB</div>
+      </button>
+      <button class="preset-btn" onclick="applyPreset('room-title')">
+        <div class="preset-title">Room Title</div>
+        <div class="preset-details">1X • 75% • PNG</div>
+      </button>
+      <button class="preset-btn" onclick="applyPreset('store-preview')">
+        <div class="preset-title">Store Preview</div>
+        <div class="preset-details">2X • 75% • PNG</div>
+      </button>
+    </div>
+  </div>
+
+  <button id="addSelectedBtn" class="button" onclick="addSelectedObjects()" disabled>
+    Add Selected Objects
+  </button>
+
+  <div class="images-section">
+    <div class="section-title">Images to Compress (<span id="imageCount">0</span>)</div>
+    <div id="imagesList" class="images-list">
+      <div class="empty-state">
+        <div class="empty-icon">📷</div>
+        <div>No images added yet</div>
+        <div style="font-size: 10px; margin-top: 4px;">Select objects in Figma and click "Add Selected Objects"</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quality-section">
+    <div class="section-title">Compression Quality</div>
+    <div class="quality-control">
+      <div class="quality-label">JPG</div>
+      <input type="range" id="jpgQuality" class="quality-slider" min="10" max="100" value="75">
+      <div id="jpgQualityValue" class="quality-value">75%</div>
+    </div>
+    <div class="quality-control">
+      <div class="quality-label">PNG</div>
+      <input type="range" id="pngQuality" class="quality-slider" min="10" max="100" value="90">
+      <div id="pngQualityValue" class="quality-value">90%</div>
+    </div>
+  </div>
+
+  <div id="progressSection" class="progress-section">
+    <div class="progress-bar">
+      <div id="progressFill" class="progress-fill"></div>
+    </div>
+    <div id="progressText" class="progress-text">Processing...</div>
+  </div>
+
+  <button id="compressBtn" class="button primary" onclick="compressAndExport()" disabled>
+    Compress & Export (<span id="variantCount">0</span> variants)
+  </button>
+
+  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+  <script>
+    // Global state
+    let currentSelection = [];
+    let imageConfigs = [];
+    let jpgQuality = 75;
+    let pngQuality = 90;
+
+    // Compression presets based on user requirements
+    const PRESETS = {
+      'mobile': { scale: 3, format: 'jpg', quality: 75, target: '±180KB' },
+      'tablet': { scale: 2, format: 'jpg', quality: 75, target: '±300KB' },
+      'room-title': { scale: 1, format: 'png', quality: 75, target: '' },
+      'store-preview': { scale: 2, format: 'png', quality: 75, target: '' }
+    };
+
+    // Initialize UI
+    document.addEventListener('DOMContentLoaded', function() {
+      // Setup quality sliders
+      const jpgSlider = document.getElementById('jpgQuality');
+      const pngSlider = document.getElementById('pngQuality');
+      const jpgValue = document.getElementById('jpgQualityValue');
+      const pngValue = document.getElementById('pngQualityValue');
+
+      jpgSlider.addEventListener('input', function() {
+        jpgQuality = parseInt(this.value);
+        jpgValue.textContent = jpgQuality + '%';
+        updateImageConfigs();
+      });
+
+      pngSlider.addEventListener('input', function() {
+        pngQuality = parseInt(this.value);
+        pngValue.textContent = pngQuality + '%';
+        updateImageConfigs();
+      });
+
+      // Request initial selection
+      sendMessage({ type: 'get-selection' });
+    });
+
+    // Message handling
+    onmessage = (event) => {
+      const message = event.data.pluginMessage;
+      if (!message) return;
+
+      switch (message.type) {
+        case 'selection-changed':
+          handleSelectionChanged(message);
+          break;
+        case 'export-results':
+          handleExportResults(message.results);
+          break;
+        case 'error':
+          showError(message.message);
+          break;
+        default:
+          console.log('Unknown message:', message);
+      }
+    };
+
+    function sendMessage(message) {
+      parent.postMessage({ pluginMessage: message }, '*');
+    }
+
+    function handleSelectionChanged(message) {
+      currentSelection = message.selection || [];
+      const count = message.count || 0;
+      
+      const statusEl = document.getElementById('selectionStatus');
+      const addBtn = document.getElementById('addSelectedBtn');
+
+      if (count > 0) {
+        statusEl.className = 'selection-status has-selection';
+        statusEl.textContent = `${count} object${count === 1 ? '' : 's'} selected`;
+        addBtn.disabled = false;
+      } else {
+        statusEl.className = 'selection-status no-selection';
+        statusEl.textContent = 'Please select objects in Figma first';
+        addBtn.disabled = true;
+      }
+    }
+
+    function addSelectedObjects() {
+      if (currentSelection.length === 0) {
+        showError('No objects selected');
+        return;
+      }
+
+      // Add selected objects to image configs
+      currentSelection.forEach(node => {
+        if (imageConfigs.find(config => config.nodeId === node.id)) {
+          return; // Skip if already added
+        }
+
+        // Determine smart defaults
+        const suggestedFormat = node.hasImageFill ? 'jpg' : 'png';
+        const suggestedScale = node.hasImageFill ? 2 : 1;
+
+        imageConfigs.push({
+          nodeId: node.id,
+          nodeName: node.name,
+          scale: suggestedScale,
+          format: suggestedFormat,
+          quality: suggestedFormat === 'jpg' ? jpgQuality : pngQuality
+        });
+      });
+
+      updateImagesList();
+      updateCompressButton();
+    }
+
+    function removeImage(nodeId) {
+      imageConfigs = imageConfigs.filter(config => config.nodeId !== nodeId);
+      updateImagesList();
+      updateCompressButton();
+    }
+
+    function updateImageConfig(nodeId, field, value) {
+      const config = imageConfigs.find(c => c.nodeId === nodeId);
+      if (config) {
+        config[field] = value;
+        if (field === 'format') {
+          // Update quality based on format
+          config.quality = value === 'jpg' ? jpgQuality : pngQuality;
+        }
+      }
+    }
+
+    function updateImageConfigs() {
+      // Update all configs with current quality settings
+      imageConfigs.forEach(config => {
+        config.quality = config.format === 'jpg' ? jpgQuality : pngQuality;
+      });
+      updateImagesList();
+    }
+
+    function updateImagesList() {
+      const listEl = document.getElementById('imagesList');
+      const countEl = document.getElementById('imageCount');
+      
+      countEl.textContent = imageConfigs.length;
+
+      if (imageConfigs.length === 0) {
+        listEl.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📷</div>
+            <div>No images added yet</div>
+            <div style="font-size: 10px; margin-top: 4px;">Select objects in Figma and click "Add Selected Objects"</div>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = imageConfigs.map(config => `
+        <div class="image-item">
+          <div class="image-header">
+            <div class="image-name">${config.nodeName}</div>
+            <button class="remove-btn" onclick="removeImage('${config.nodeId}')" title="Remove">×</button>
+          </div>
+          <div class="image-controls">
+            <div class="control-group">
+              <div class="control-label">Scale</div>
+              <input type="number" class="control-input" value="${config.scale}" min="0.1" max="10" step="0.1" 
+                     onchange="updateImageConfig('${config.nodeId}', 'scale', parseFloat(this.value))">
+            </div>
+            <div class="control-group">
+              <div class="control-label">Format</div>
+              <select class="control-select" onchange="updateImageConfig('${config.nodeId}', 'format', this.value)">
+                <option value="jpg" ${config.format === 'jpg' ? 'selected' : ''}>JPG</option>
+                <option value="png" ${config.format === 'png' ? 'selected' : ''}>PNG</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateCompressButton() {
+      const btn = document.getElementById('compressBtn');
+      const countEl = document.getElementById('variantCount');
+      
+      countEl.textContent = imageConfigs.length;
+      btn.disabled = imageConfigs.length === 0;
+    }
+
+    function applyPreset(presetName) {
+      const preset = PRESETS[presetName];
+      if (!preset) return;
+
+      if (imageConfigs.length === 0) {
+        showError('Please add images first');
+        return;
+      }
+
+      // Apply preset to all images
+      imageConfigs.forEach(config => {
+        config.scale = preset.scale;
+        config.format = preset.format;
+        config.quality = preset.quality;
+      });
+
+      // Update quality sliders
+      if (preset.format === 'jpg') {
+        document.getElementById('jpgQuality').value = preset.quality;
+        document.getElementById('jpgQualityValue').textContent = preset.quality + '%';
+        jpgQuality = preset.quality;
+      } else {
+        document.getElementById('pngQuality').value = preset.quality;
+        document.getElementById('pngQualityValue').textContent = preset.quality + '%';
+        pngQuality = preset.quality;
+      }
+
+      updateImagesList();
+      hideError();
+    }
+
+    async function compressAndExport() {
+      if (imageConfigs.length === 0) {
+        showError('No images to compress');
+        return;
+      }
+
+      showProgress(0, 'Starting export...');
+      
+      try {
+        // Send export request to main thread
+        sendMessage({
+          type: 'export-images',
+          data: { imageConfigs }
+        });
+      } catch (error) {
+        showError('Export failed: ' + error.message);
+        hideProgress();
+      }
+    }
+
+    async function handleExportResults(results) {
+      try {
+        const compressedImages = [];
+        let processed = 0;
+
+       for (const result of results) {
+          if (!result.success) {
+          console.error('Export failed for:', result.nodeName, result.error);
+          showError(`Export failed for ${result.nodeName}: ${result.error}`);
+          processed++;
+          showProgress((processed / results.length) * 50, `Failed: ${result.nodeName}`);
+          continue;
+          }
+
+        showProgress((processed / results.length) * 50, `Compressing: ${result.nodeName}`);
+
+        try {
+          console.log('Processing:', result.nodeName, 'Size:', result.originalBytes.length, 'Format:', result.config.format);
+        
+          // Convert Uint8Array to File for compression
+          const blob = new Blob([result.originalBytes], { 
+          type: result.config.format === 'jpg' ? 'image/jpeg' : 'image/png' 
+          });
+        
+          console.log('Blob created:', blob.size, blob.type);
+        
+          const file = new File([blob], `${result.nodeName}.${result.config.format}`, { 
+          type: blob.type 
+          });
+        
+          console.log('File created:', file.size, file.type);
+
+          // Simplified compression options for debugging
+          const options = {
+              maxSizeMB: 0.5, // 500KB limit for aggressive compression
+              maxWidthOrHeight: 1920, // Reasonable resolution limit
+              useWebWorker: false,
+              quality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
+              initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
+              alwaysKeepResolution: false,
+              fileType: result.config.format === 'jpg' ? 'image/jpeg' : 'image/png'
+            };
+          
+          console.log('Compression options:', options);
+
+          const compressedFile = await imageCompression(file, options);
+          console.log('Compression successful:', compressedFile.size);
+        
+          const compressedBytes = await compressedFile.arrayBuffer();
+
+          // Generate filename
+          const filename = `${result.nodeName}@${result.config.scale}x_${result.config.quality}.${result.config.format}`;
+
+          compressedImages.push({
+            filename,
+            data: new Uint8Array(compressedBytes),
+            originalSize: result.originalBytes.length,
+            compressedSize: compressedBytes.byteLength
+            });
+
+          console.log('Successfully compressed:', filename, 'Original:', result.originalBytes.length, 'Compressed:', compressedBytes.byteLength);
+        }
+
+          catch (compressionError) {
+          console.error('Compression failed for:', result.nodeName, compressionError);
+          showError(`Compression failed for ${result.nodeName}: ${compressionError.message}`);
+        
+          // Add the original image without compression as fallback
+          const filename = `${result.nodeName}@${result.config.scale}x_original.${result.config.format}`;
+          compressedImages.push({
+          filename,
+          data: result.originalBytes,
+          originalSize: result.originalBytes.length,
+          compressedSize: result.originalBytes.length
+          });
+        }
+        processed++;
+        showProgress(50 + (processed / results.length) * 50, `Processed: ${result.nodeName}`);
+      }
+
+      if (compressedImages.length === 0) {
+        showError('No images were successfully processed');
+        hideProgress();
+        return;
+      }
+
+      // Create and download ZIP
+      showProgress(100, 'Creating download...');
+      await downloadAsZip(compressedImages);
+    
+      hideProgress();
+      showSuccess(`Successfully processed ${compressedImages.length} image${compressedImages.length === 1 ? '' : 's'}!`);
+
+    } catch (error) {
+      console.error('Processing failed:', error);
+      showError('Processing failed: ' + error.message);
+      hideProgress();
+      }
+  }
+
+
+    async function downloadAsZip(images) {
+      // Simple ZIP creation (basic implementation)
+      const zip = new JSZip();
+      
+      images.forEach(image => {
+        zip.file(image.filename, image.data);
+      });
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      
+      // Download
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'compressed-images.zip';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function showProgress(percent, text) {
+      const section = document.getElementById('progressSection');
+      const fill = document.getElementById('progressFill');
+      const textEl = document.getElementById('progressText');
+      
+      section.style.display = 'block';
+      fill.style.width = percent + '%';
+      textEl.textContent = text;
+    }
+
+    function hideProgress() {
+      document.getElementById('progressSection').style.display = 'none';
+    }
+
+    function showError(message) {
+      const errorEl = document.getElementById('errorMessage');
+      errorEl.textContent = message;
+      errorEl.style.display = 'block';
+    }
+
+    function hideError() {
+      document.getElementById('errorMessage').style.display = 'none';
+    }
+
+    function showSuccess(message) {
+      // Temporarily show success in the error element with different styling
+      const errorEl = document.getElementById('errorMessage');
+      errorEl.textContent = message;
+      errorEl.style.display = 'block';
+      errorEl.style.background = 'var(--figma-color-bg-success)';
+      errorEl.style.color = 'var(--figma-color-text-success)';
+      
+      setTimeout(() => {
+        hideError();
+        errorEl.style.background = 'var(--figma-color-bg-danger)';
+        errorEl.style.color = 'var(--figma-color-text-ondanger)';
+      }, 3000);
+    }
+
+    // Add JSZip library
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js';
+    document.head.appendChild(script);
+  </script>
+</body>
+</html>
+

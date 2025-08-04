@@ -1,5 +1,3 @@
-//Testing GitHup push
-
 "use strict";
 // Main thread code
 // Show the UI

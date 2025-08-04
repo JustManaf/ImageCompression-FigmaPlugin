@@ -1,5 +1,3 @@
-//Testing GitHup push
-
 // Main thread code
 // Show the UI
 figma.showUI(__html__, { 
@@ -86,9 +84,7 @@ async function handleExportImages(exportData: any) {
       });
       return;
     }
-
     const exportResults = [];
-
     for (const config of imageConfigs) {
       const node = selection.find(n => n.id === config.nodeId);
       if (!node) continue;
@@ -135,7 +131,6 @@ async function handleExportImages(exportData: any) {
       type: 'export-results',
       results: exportResults
     });
-
   } catch (error) {
     console.error('Export error:', error);
     figma.ui.postMessage({
@@ -147,4 +142,3 @@ async function handleExportImages(exportData: any) {
 
 // Keep plugin running until explicitly closed
 console.log('Image Compression plugin started');
-

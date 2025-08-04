@@ -300,9 +300,7 @@
       Please select objects in Figma first
     </div>
   </div>
-
   <div id="errorMessage" class="error-message"></div>
-
   <div class="presets-section">
     <div class="section-title">Compression Standards</div>
     <div class="presets-grid">
@@ -324,11 +322,9 @@
       </button>
     </div>
   </div>
-
   <button id="addSelectedBtn" class="button" onclick="addSelectedObjects()" disabled>
     Add Selected Objects
   </button>
-
   <div class="images-section">
     <div class="section-title">Images to Compress (<span id="imageCount">0</span>)</div>
     <div id="imagesList" class="images-list">
@@ -339,7 +335,6 @@
       </div>
     </div>
   </div>
-
   <div class="quality-section">
     <div class="section-title">Compression Quality</div>
     <div class="quality-control">
@@ -353,20 +348,18 @@
       <div id="pngQualityValue" class="quality-value">90%</div>
     </div>
   </div>
-
   <div id="progressSection" class="progress-section">
     <div class="progress-bar">
       <div id="progressFill" class="progress-fill"></div>
     </div>
     <div id="progressText" class="progress-text">Processing...</div>
   </div>
-
   <button id="compressBtn" class="button primary" onclick="compressAndExport()" disabled>
     Compress & Export (<span id="variantCount">0</span> variants)
   </button>
-
   <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
   <script>
+
     // Global state
     let currentSelection = [];
     let imageConfigs = [];
@@ -471,7 +464,6 @@
           quality: suggestedFormat === 'jpg' ? jpgQuality : pngQuality
         });
       });
-
       updateImagesList();
       updateCompressButton();
     }
@@ -504,7 +496,6 @@
     function updateImagesList() {
       const listEl = document.getElementById('imagesList');
       const countEl = document.getElementById('imageCount');
-      
       countEl.textContent = imageConfigs.length;
 
       if (imageConfigs.length === 0) {
@@ -616,21 +607,18 @@
           }
 
         showProgress((processed / results.length) * 50, `Compressing: ${result.nodeName}`);
-
         try {
           console.log('Processing:', result.nodeName, 'Size:', result.originalBytes.length, 'Format:', result.config.format);
-        
+
           // Convert Uint8Array to File for compression
           const blob = new Blob([result.originalBytes], { 
           type: result.config.format === 'jpg' ? 'image/jpeg' : 'image/png' 
           });
         
           console.log('Blob created:', blob.size, blob.type);
-        
           const file = new File([blob], `${result.nodeName}.${result.config.format}`, { 
           type: blob.type 
           });
-        
           console.log('File created:', file.size, file.type);
 
           // Format-specific compression options
@@ -650,7 +638,6 @@
           } else if (result.config.format === 'png') {
             // PNG compression
             const pngQuality = result.config.quality / 100;
-            
             options = {
               maxSizeMB: pngQuality > 0.8 ? 2.0 : pngQuality > 0.5 ? 1.0 : 0.5,
               maxWidthOrHeight: pngQuality > 0.8 ? 4096 : pngQuality > 0.5 ? 2048 : 1920,
@@ -669,17 +656,14 @@
         const compressedFile = await imageCompression(file, options);
         console.log('Compression successful:', compressedFile.size);
         const compressedBytes = await compressedFile.arrayBuffer();
-
           // Generate filename
           const filename = `${result.nodeName}@${result.config.scale}x_${result.config.quality}.${result.config.format}`;
-
           compressedImages.push({
             filename,
             data: new Uint8Array(compressedBytes),
             originalSize: result.originalBytes.length,
             compressedSize: compressedBytes.byteLength
             });
-
           console.log('Successfully compressed:', filename, 'Original:', result.originalBytes.length, 'Compressed:', compressedBytes.byteLength);
         }
 
@@ -709,10 +693,8 @@
       // Create and download ZIP
       showProgress(100, 'Creating download...');
       await downloadAsZip(compressedImages);
-    
       hideProgress();
       showSuccess(`Successfully processed ${compressedImages.length} image${compressedImages.length === 1 ? '' : 's'}!`);
-
     } catch (error) {
       console.error('Processing failed:', error);
       showError('Processing failed: ' + error.message);
@@ -720,15 +702,12 @@
       }
   }
 
-
     async function downloadAsZip(images) {
       // Simple ZIP creation (basic implementation)
       const zip = new JSZip();
-      
       images.forEach(image => {
         zip.file(image.filename, image.data);
       });
-
       const zipBlob = await zip.generateAsync({ type: 'blob' });
       
       // Download
@@ -788,4 +767,3 @@
   </script>
 </body>
 </html>
-

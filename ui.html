@@ -633,23 +633,42 @@
         
           console.log('File created:', file.size, file.type);
 
-          // Simplified compression options for debugging
-          const options = {
-              maxSizeMB: 0.5, // 500KB limit for aggressive compression
-              maxWidthOrHeight: 1920, // Reasonable resolution limit
+          // Format-specific compression options
+          let options;
+
+          if (result.config.format === 'jpg') {
+            // JPG compression
+            options = {
+              maxSizeMB: 0.5,
+              maxWidthOrHeight: 1920,
               useWebWorker: false,
               quality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
               initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
               alwaysKeepResolution: false,
-              fileType: result.config.format === 'jpg' ? 'image/jpeg' : 'image/png'
+              fileType: 'image/jpeg'
             };
-          
-          console.log('Compression options:', options);
+          } else if (result.config.format === 'png') {
+            // PNG compression
+            const pngQuality = result.config.quality / 100;
+            
+            options = {
+              maxSizeMB: pngQuality > 0.8 ? 2.0 : pngQuality > 0.5 ? 1.0 : 0.5,
+              maxWidthOrHeight: pngQuality > 0.8 ? 4096 : pngQuality > 0.5 ? 2048 : 1920,
+              useWebWorker: false,
+              // Using quality to control palette optimization
+              quality: Math.max(0.3, pngQuality), // Higher minimum for PNG
+              alwaysKeepResolution: pngQuality > 0.8, // Keep resolution for high quality
+              fileType: 'image/png',
+              // PNG-specific options
+              preserveExif: pngQuality > 0.9,
+              maxIteration: pngQuality < 0.5 ? 20 : 10 // More iterations for aggressive compression
+            };
+          }
 
-          const compressedFile = await imageCompression(file, options);
-          console.log('Compression successful:', compressedFile.size);
-        
-          const compressedBytes = await compressedFile.arrayBuffer();
+        console.log('Compression options:', options);
+        const compressedFile = await imageCompression(file, options);
+        console.log('Compression successful:', compressedFile.size);
+        const compressedBytes = await compressedFile.arrayBuffer();
 
           // Generate filename
           const filename = `${result.nodeName}@${result.config.scale}x_${result.config.quality}.${result.config.format}`;

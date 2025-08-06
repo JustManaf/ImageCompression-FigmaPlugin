@@ -625,37 +625,17 @@
           let options;
           let compressedBytes;
           if (result.config.format === 'jpg') {
-            // JPG compression
-            const jpgQuality = result.config.quality / 100;
-            const figmaScale = result.config.scale;
-
-            // Calculate appropriate maxWidthOrHeight based on scale factor
-            let maxDimension;
-            if (figmaScale >= 3.0) {
-              maxDimension = 6144; // 3x scale needs higher resolution limit
-            } 
-            else if (figmaScale >= 2.5) {
-              maxDimension = 5120; // 2.5x scale
-            }
-             else if (figmaScale >= 2.0) {
-              maxDimension = 4096; // 2x scale
-            }
-            else if (figmaScale >= 1.5) {
-              maxDimension = 3072; // 1.5x scale
-            }
-            else {
-              maxDimension = 2048; // 1x scale (default)
-            }
-
+            // JPG compression (keep current - it's working great!)
             options = {
-              maxSizeMB: jpgQuality > 0.8 ? 1.0 : jpgQuality > 0.5 ? 0.6 : 0.4,
-              maxWidthOrHeight: maxDimension, // Scale-aware dimension limit
-              useWebWorker: false,          
-              quality: Math.max(0.3, jpgQuality),
-              initialQuality: Math.max(0.3, jpgQuality),
-              alwaysKeepResolution: true,
+              maxSizeMB: 0.5,
+              maxWidthOrHeight: 1920,
+              useWebWorker: false,
+              quality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
+              initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
+              alwaysKeepResolution: false,
               fileType: 'image/jpeg'
             };
+            
             console.log('JPG Compression options:', options);
             const compressedFile = await imageCompression(file, options);
             console.log('JPG Compression successful:', compressedFile.size);

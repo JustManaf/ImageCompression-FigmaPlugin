@@ -84,7 +84,7 @@ figma.ui.onmessage = async (message) => {
         break;
 
       case 'export-images':
-        await handleExportImages(message.data);
+        await handleExportImages(message);
         break;
 
       case 'close-plugin':
@@ -106,7 +106,7 @@ figma.ui.onmessage = async (message) => {
 // Handle image export
 async function handleExportImages(exportData: any) {
   try {
-    const { imageConfigs } = exportData;
+    const { imageConfigs } = exportData.imageConfigs ? exportData : { imageConfigs: exportData.imageConfigs || [] };
     
     if (!imageConfigs || imageConfigs.length === 0) {
       figma.ui.postMessage({

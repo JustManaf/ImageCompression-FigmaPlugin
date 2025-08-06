@@ -72,7 +72,7 @@ figma.ui.onmessage = async (message) => {
                 sendSelectionToUI();
                 break;
             case 'export-images':
-                await handleExportImages(message.data);
+                await handleExportImages(message);
                 break;
             case 'close-plugin':
                 figma.closePlugin();
@@ -92,7 +92,7 @@ figma.ui.onmessage = async (message) => {
 // Handle image export
 async function handleExportImages(exportData) {
     try {
-        const { imageConfigs } = exportData;
+        const { imageConfigs } = exportData.imageConfigs ? exportData : { imageConfigs: exportData.imageConfigs || [] };
         if (!imageConfigs || imageConfigs.length === 0) {
             figma.ui.postMessage({
                 type: 'error',

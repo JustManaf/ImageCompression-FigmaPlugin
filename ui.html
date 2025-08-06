@@ -149,6 +149,36 @@
       align-items: center;
     }
 
+    .quality-display {
+      font-size: 10px;
+      font-weight: 600;
+      min-width: 30px;
+      color: var(--figma-color-text-secondary);
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .control-label {
+      font-size: 10px;
+      font-weight: 500;
+      min-width: 45px;
+    }
+
+    .control-input, .control-select {
+      flex: 1;
+      padding: 4px 6px;
+      border: 1px solid var(--figma-color-border);
+      border-radius: 4px;
+      background: var(--figma-color-bg);
+      color: var(--figma-color-text);
+      font-size: 10px;
+    }
+
     .control-group {
       display: flex;
       flex-direction: column;
@@ -408,10 +438,15 @@
           handleSelectionChanged(message);
           break;
         case 'export-results':
+          console.log('Received export results:', message.results);
           handleExportResults(message.results);
           break;
         case 'error':
+          console.error('TypeScript error:', message.message);
           showError(message.message);
+          const btn = document.getElementById('compressBtn');
+          btn.disabled = false;
+          btn.textContent = `Compress & Export (${imageConfigs.length} variants)`;
           break;
         default:
           console.log('Unknown message:', message);
@@ -452,16 +487,24 @@
     }
 
     function addSelectedObjects() {
+      console.log('addSelectedObjects called'); // DEBUG
+      console.log('currentSelection:', currentSelection); // DEBUG
+
       if (currentSelection.length === 0) {
         showError('No objects selected');
         return;
       }
 
+      console.log('Adding objects to imageConfigs'); // DEBUG
+
       // Add selected objects to image configs
       currentSelection.forEach(node => {
         if (imageConfigs.find(config => config.nodeId === node.id)) {
+          console.log('Skipping duplicate:', node.name); // DEBUG
           return; // Skip if already added
         }
+
+        console.log('Adding node:', node.name); // DEBUG
 
         // Determine smart defaults
         const suggestedFormat = node.hasImageFill ? 'jpg' : 'png';
@@ -475,6 +518,8 @@
           quality: suggestedFormat === 'jpg' ? jpgQuality : pngQuality
         });
       });
+
+      console.log('imageConfigs after adding:', imageConfigs); // DEBUG
       updateImagesList();
       updateCompressButton();
       updateSelectionStatus(); 
@@ -498,6 +543,27 @@
       }
     }
 
+    function applyPresetToImage(nodeId, presetName) {
+      const config = imageConfigs.find(c => c.nodeId === nodeId);
+      if (!config) return;
+
+      const presets = {
+        'mobile': { scale: 3, format: 'jpg', quality: 75 },
+        'tablet': { scale: 2, format: 'jpg', quality: 75 },
+        'room-title': { scale: 1, format: 'png', quality: 75 },
+        'store-preview': { scale: 2, format: 'png', quality: 75 }
+      };
+
+      if (presets[presetName]) {
+        const preset = presets[presetName];
+        config.scale = preset.scale;
+        config.format = preset.format;
+        config.quality = preset.quality;
+        updateImagesList(); // Refresh the UI
+      }
+    }
+
+
     function updateImageConfigs() {
       // Update all configs with current quality settings
       imageConfigs.forEach(config => {
@@ -509,6 +575,9 @@
     function updateImagesList() {
       const listEl = document.getElementById('imagesList');
       const countEl = document.getElementById('imageCount');
+      
+      console.log('updateImagesList called, imageConfigs.length:', imageConfigs.length);
+      
       countEl.textContent = imageConfigs.length;
 
       if (imageConfigs.length === 0) {
@@ -522,17 +591,19 @@
         return;
       }
 
+      // Simple HTML generation without complex functions
       listEl.innerHTML = imageConfigs.map(config => `
         <div class="image-item">
           <div class="image-header">
             <div class="image-name">${config.nodeName}</div>
             <button class="remove-btn" onclick="removeImage('${config.nodeId}')" title="Remove">×</button>
           </div>
+          
           <div class="image-controls">
             <div class="control-group">
               <div class="control-label">Scale</div>
               <input type="number" class="control-input" value="${config.scale}" min="0.1" max="10" step="0.1" 
-                     onchange="updateImageConfig('${config.nodeId}', 'scale', parseFloat(this.value))">
+                    onchange="updateImageConfig('${config.nodeId}', 'scale', parseFloat(this.value))">
             </div>
             <div class="control-group">
               <div class="control-label">Format</div>
@@ -541,9 +612,72 @@
                 <option value="png" ${config.format === 'png' ? 'selected' : ''}>PNG</option>
               </select>
             </div>
+            <div class="control-group">
+              <div class="control-label">Quality</div>
+                <input type="range" class="control-input" min="10" max="100" value="${config.quality}" 
+                      oninput="updateQualityDisplay('${config.nodeId}', this.value)" 
+                      onchange="updateImageConfig('${config.nodeId}', 'quality', parseInt(this.value))">
+                <span class="quality-display" id="quality-display-${config.nodeId}">${config.quality}%</span>
+            </div>
           </div>
         </div>
       `).join('');
+      console.log('HTML generated successfully');
+    }
+
+    // ADD these missing functions after updateImagesList()
+    function applyPresetToImage(nodeId, presetName) {
+      const config = imageConfigs.find(c => c.nodeId === nodeId);
+      if (!config) return;
+
+      const presets = {
+        'mobile': { scale: 3, format: 'jpg', quality: 75 },
+        'tablet': { scale: 2, format: 'jpg', quality: 75 },
+        'room-title': { scale: 1, format: 'png', quality: 75 },
+        'store-preview': { scale: 2, format: 'png', quality: 75 }
+      };
+
+      if (presets[presetName]) {
+        const preset = presets[presetName];
+        config.scale = preset.scale;
+        config.format = preset.format;
+        config.quality = preset.quality;
+        updateImagesList(); // Refresh the UI
+      }
+    }
+
+    function getPresetForConfig(config) {
+      const presets = {
+        'mobile': { scale: 3, format: 'jpg', quality: 75 },
+        'tablet': { scale: 2, format: 'jpg', quality: 75 },
+        'room-title': { scale: 1, format: 'png', quality: 75 },
+        'store-preview': { scale: 2, format: 'png', quality: 75 }
+      };
+
+      for (const [name, preset] of Object.entries(presets)) {
+        if (config.scale === preset.scale && 
+            config.format === preset.format && 
+            config.quality === preset.quality) {
+          return name;
+        }
+      }
+      return 'custom';
+    }
+
+    function updateQualityDisplay(nodeId, value) {
+      const displayEl = document.getElementById(`quality-display-${nodeId}`);
+      if (displayEl) {
+        displayEl.textContent = value + '%';
+      }
+    }
+
+    function updateImageConfigAndDisplay(nodeId, field, value, element) {
+      updateImageConfig(nodeId, field, value);
+      // Update the display immediately
+      const displayEl = document.getElementById(`quality-${nodeId}`);
+      if (displayEl) {
+        displayEl.textContent = value + '%';
+      }
     }
 
     function updateCompressButton() {
@@ -563,12 +697,34 @@
         return;
       }
 
+      // Ask for confirmation when applying to all images
+      if (imageConfigs.length > 1) {
+        if (!confirm(`Apply ${presetName} preset to all ${imageConfigs.length} images?`)) {
+          return;
+        }
+      }
+
       // Apply preset to all images
       imageConfigs.forEach(config => {
         config.scale = preset.scale;
         config.format = preset.format;
         config.quality = preset.quality;
       });
+
+      // Update quality sliders
+      if (preset.format === 'jpg') {
+        document.getElementById('jpgQuality').value = preset.quality;
+        document.getElementById('jpgQualityValue').textContent = preset.quality + '%';
+        jpgQuality = preset.quality;
+      } 
+      else {
+        document.getElementById('pngQuality').value = preset.quality;
+        document.getElementById('pngQualityValue').textContent = preset.quality + '%';
+        pngQuality = preset.quality;
+      }
+
+      updateImagesList();
+      hideError();
 
       // Update quality sliders
       if (preset.format === 'jpg') {
@@ -591,18 +747,69 @@
         return;
       }
 
-      showProgress(0, 'Starting export...');
+      const btn = document.getElementById('compressBtn');
+      const originalText = btn.textContent;
       
       try {
-        // Send export request to main thread
-        sendMessage({
-          type: 'export-images',
-          data: { imageConfigs }
-        });
+        btn.disabled = true;
+        btn.textContent = 'Starting export...';
+        hideError();
+        
+        console.log('Sending export request with configs:', imageConfigs);
+        
+        // Send export request to TypeScript
+        parent.postMessage({
+          pluginMessage: {
+            type: 'export-images',
+            imageConfigs: imageConfigs
+          }
+        }, '*');
+        
       } catch (error) {
+        console.error('Export initiation failed:', error);
         showError('Export failed: ' + error.message);
-        hideProgress();
+        btn.disabled = false;
+        btn.textContent = originalText;
       }
+    }
+
+    function handleExportResults(results) {
+      console.log('Export results received:', results);
+      
+      const btn = document.getElementById('compressBtn');
+      btn.textContent = 'Processing images...';
+      
+      // Process each exported image
+      results.forEach(async (result, index) => {
+        if (result.success) {
+          btn.textContent = `Compressing ${index + 1}/${results.length}...`;
+          
+          // Compress the image
+          try {
+            const compressedBytes = await compressImage(result.bytes, result.config);
+            
+            // Download the compressed image
+            const blob = new Blob([new Uint8Array(compressedBytes)]);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = result.filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+          } catch (error) {
+            console.error('Compression failed:', error);
+            showError(`Failed to compress ${result.nodeName}: ${error.message}`);
+          }
+        } else {
+          showError(`Export failed for ${result.nodeName}: ${result.error}`);
+        }
+      });
+      
+      // Reset button
+      btn.textContent = `Compress & Export (${imageConfigs.length} variants)`;
+      btn.disabled = false;
+      showSuccess(`Exported ${results.filter(r => r.success).length} images`);
     }
 
     async function handleExportResults(results) {
@@ -828,12 +1035,18 @@
 
     function showError(message) {
       const errorEl = document.getElementById('errorMessage');
-      errorEl.textContent = message;
-      errorEl.style.display = 'block';
+        if (errorEl) {
+          errorEl.textContent = message;
+          errorEl.style.display = 'block';
+        }
+        console.error('Plugin Error:', message);
     }
 
     function hideError() {
-      document.getElementById('errorMessage').style.display = 'none';
+      const errorEl = document.getElementById('errorMessage');
+      if (errorEl) {
+        errorEl.style.display = 'none';
+      }
     }
 
     function showSuccess(message) {
@@ -851,10 +1064,24 @@
       }, 3000);
     }
 
-    // Add JSZip library
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js';
-    document.head.appendChild(script);
+    // Load JSZip library properly
+    function loadJSZip() {
+      return new Promise((resolve, reject) => {
+        if (window.JSZip) {
+          resolve();
+          return;
+        }
+        
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js';
+        script.onload = ( ) => resolve();
+        script.onerror = () => reject(new Error('Failed to load JSZip'));
+        document.head.appendChild(script);
+      });
+    }
+
+    // Load JSZip on page load
+    loadJSZip().catch(console.error);
   </script>
 </body>
 </html>

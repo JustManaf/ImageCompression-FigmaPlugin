@@ -625,7 +625,7 @@
           let options;
           let compressedBytes;
           if (result.config.format === 'jpg') {
-            // JPG compression (keep current - it's working great!)
+            // JPG compression
             options = {
               maxSizeMB: 0.5,
               maxWidthOrHeight: 1920,
@@ -646,14 +646,30 @@
             const pngQuality = result.config.quality / 100;
             console.log(`Ultra PNG Compression: Quality ${Math.round(pngQuality*100)}%`);
             
-            // AGGRESSIVE size limits to beat OlivePress
-            const targetSizeMB = pngQuality > 0.9 ? 0.3 :     // 90-100%: 300KB max (was 800KB)
-                                 pngQuality > 0.8 ? 0.2 :     // 80-90%: 200KB max (was 600KB)
-                                 pngQuality > 0.7 ? 0.15 :    // 70-80%: 150KB max (was 400KB)
-                                 pngQuality > 0.5 ? 0.1 :     // 50-70%: 100KB max (was 250KB)
-                                 pngQuality > 0.3 ? 0.08 :    // 30-50%: 80KB max (was 150KB)
-                                 0.05;                        // <30%: 50KB max (was 100KB)
-            
+
+            // Content-aware compression based on original file size
+            const originalSizeMB = file.size / (1024 * 1024);
+            const isComplexImage = originalSizeMB > 0.18; // 180KB+ = complex (179KB=simple, 192KB=complex)
+
+            // AGGRESSIVE size limits
+            const targetSizeMB = isComplexImage ? 
+              // Higher quality for complex images
+              (pngQuality > 0.9 ? 0.5 :    // 90-100%: 500KB max
+              pngQuality > 0.8 ? 0.3 :     // 80-90%:  300KB max
+              pngQuality > 0.7 ? 0.2 :     // 70-80%:  200KB max 
+              pngQuality > 0.5 ? 0.15 :    // 50-70%:  150KB max
+              pngQuality > 0.3 ? 0.1 :     // 30-50%:  100KB max
+              0.08) :                      // <30%:    80KB max
+              // Aggressive for simple images
+              (pngQuality > 0.9 ? 0.15 :   // 90-100%: 150KB max
+              pngQuality > 0.8 ? 0.08 :    // 80-90%:  80KB max  
+              pngQuality > 0.7 ? 0.06 :    // 70-80%:  60KB max
+              pngQuality > 0.5 ? 0.05 :    // 50-70%:  50KB max
+              pngQuality > 0.3 ? 0.04 :    // 30-50%:  40KB max
+              0.03);                       // <30%:    30KB max
+
+            console.log(`Content-aware compression: ${isComplexImage ? 'Complex' : 'Simple'} image, target: ${targetSizeMB}MB`);  // <30%: 50KB max
+
             const figmaScale = result.config.scale;
             let maxDimension;
             if (figmaScale >= 3.0) {
@@ -673,10 +689,10 @@
               maxSizeMB: targetSizeMB,
               maxWidthOrHeight: maxDimension, // Keep resolution
               useWebWorker: false,
-              quality: Math.max(0.1, pngQuality * 0.5), // More aggressive quality reduction
+              quality: Math.max(0.4, pngQuality * 0.7), // Maintain high quality like OlivePress
               fileType: 'image/png',
               preserveExif: false,
-              alwaysKeepResolution: false,
+              alwaysKeepResolution: true,
               maxIteration: 30 // More compression iterations
             };
         
@@ -688,29 +704,29 @@
               const compressionRatio = Math.round((1 - compressedFile.size / file.size) * 100);
               console.log(`PNG Ultra Complete: ${file.size} → ${compressedFile.size} bytes (${compressionRatio}% reduction)`);
               
-              // If compression isn't good enough, try even more aggressive settings
-                if (compressionRatio < 60 || compressedFile.size > (targetSizeMB * 1024 * 1024)) {
-                console.log('Trying EXTREME PNG compression...');
-      
-                const extremeOptions = {
-                  maxSizeMB: targetSizeMB * 0.3, // Even more aggressive
-                  maxWidthOrHeight: 3072, // Slightly reduce resolution
+              // Smart fallback for better compression if needed
+              if (compressedFile.size > (targetSizeMB * 1024 * 1024)) {
+                console.log('Applying smart compression fallback...');                  
+                const smartOptions = {
+                  maxSizeMB: targetSizeMB * 0.8, // 20% more aggressive
+                  maxWidthOrHeight: maxDimension,
                   useWebWorker: false,
-                  quality: 0.01, // Minimum quality
+                  quality: Math.max(0.3, pngQuality * 0.6), // More aggressive quality
                   fileType: 'image/png',
                   preserveExif: false,
-                  alwaysKeepResolution: false
+                  alwaysKeepResolution: true, // Keep dimensions
+                  maxIteration: 50 // More iterations
                 };
-                
-                const extremeFile = await imageCompression(file, extremeOptions);
-                if (extremeFile.size < compressedFile.size) {
-                  compressedBytes = await extremeFile.arrayBuffer();
-                  const extremeRatio = Math.round((1 - extremeFile.size / file.size) * 100);
-                  console.log(`PNG EXTREME Complete: ${file.size} → ${extremeFile.size} bytes (${extremeRatio}% reduction)`);
+                 
+                const smartFile = await imageCompression(file, smartOptions);
+                if (smartFile.size < compressedFile.size) {
+                  compressedBytes = await smartFile.arrayBuffer();
+                  const smartRatio = Math.round((1 - smartFile.size / file.size) * 100);
+                  console.log(`PNG Smart Complete: ${file.size} → ${smartFile.size} bytes (${smartRatio}% reduction)`);
                 }
               }
-              
-            } catch (error) {
+            }
+              catch (error) {
               console.error('PNG Ultra compression failed:', error);
               throw error;
             }

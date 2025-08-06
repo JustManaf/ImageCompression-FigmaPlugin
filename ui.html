@@ -424,16 +424,27 @@
 
     function handleSelectionChanged(message) {
       currentSelection = message.selection || [];
-      const count = message.count || 0;
-      
+      updateSelectionStatus(); // Use the new intelligent status function
+    }
+
+    function updateSelectionStatus() {
       const statusEl = document.getElementById('selectionStatus');
       const addBtn = document.getElementById('addSelectedBtn');
+      const currentCount = currentSelection.length;
+      const imagesCount = imageConfigs.length;
 
-      if (count > 0) {
+      if (imagesCount > 0) {
+        // If we have images in compression list, show success status
         statusEl.className = 'selection-status has-selection';
-        statusEl.textContent = `${count} object${count === 1 ? '' : 's'} selected`;
+        statusEl.textContent = `${imagesCount} image${imagesCount === 1 ? '' : 's'} ready to compress`;
+        addBtn.disabled = currentCount === 0; // Only disable if no current selection to add
+      } else if (currentCount > 0) {
+        // If no images in list but current selection exists
+        statusEl.className = 'selection-status has-selection';
+        statusEl.textContent = `${currentCount} object${currentCount === 1 ? '' : 's'} selected`;
         addBtn.disabled = false;
       } else {
+        // No images in list and no current selection
         statusEl.className = 'selection-status no-selection';
         statusEl.textContent = 'Please select objects in Figma first';
         addBtn.disabled = true;
@@ -466,12 +477,14 @@
       });
       updateImagesList();
       updateCompressButton();
+      updateSelectionStatus(); 
     }
 
     function removeImage(nodeId) {
       imageConfigs = imageConfigs.filter(config => config.nodeId !== nodeId);
       updateImagesList();
       updateCompressButton();
+      updateSelectionStatus();
     }
 
     function updateImageConfig(nodeId, field, value) {

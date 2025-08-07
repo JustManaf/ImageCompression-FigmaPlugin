@@ -528,18 +528,47 @@
       position: relative;
       display: flex;
       width: 60px;
+      z-index: 1;
     }
 
-    .figma-scale-input {
-      width: 100%;
+    .figma-dropdown-btn {
+      background: red !important;  /* Temporary - makes button visible */
+      opacity: 0.8 !important;
+    }
+
+    .figma-scale-select {
+      width: 60px;
       height: 24px;
-      padding: 2px 20px 2px 6px;
+      padding: 2px 4px;
       border: 1px solid var(--figma-color-border);
       border-radius: 4px;
       background: var(--figma-color-bg);
       color: var(--figma-color-text);
       font-size: 11px;
-      text-align: left;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .figma-scale-select:focus {
+      border-color: var(--figma-color-border-brand);
+      box-shadow: 0 0 0 1px var(--figma-color-border-brand);
+    }
+
+    .figma-scale-select option {
+      background: var(--figma-color-bg);
+      color: var(--figma-color-text);
+    }
+
+    .figma-scale-input {
+      width: 100%;
+      height: 24px;
+      padding: 2px 6px;
+      border: 1px solid var(--figma-color-border);
+      border-radius: 4px;
+      background: var(--figma-color-bg);
+      color: var(--figma-color-text);
+      font-size: 11px;
+      text-align: center;
       outline: none;
     }
 
@@ -550,18 +579,20 @@
 
     .figma-dropdown-btn {
       position: absolute;
-      right: 2px;
-      top: 2px;
-      width: 16px;
-      height: 20px;
+      right: 1px;
+      top: 1px;
+      width: 18px;
+      height: 22px;
       border: none;
       background: transparent;
       color: var(--figma-color-text-secondary);
-      font-size: 8px;
+      font-size: 10px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 10;
+      pointer-events: auto;
     }
 
     .figma-dropdown-btn:hover {
@@ -578,7 +609,7 @@
       border: 1px solid var(--figma-color-border);
       border-radius: 4px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      z-index: 1000;
+      z-index: 9999;
       max-height: 120px;
       overflow-y: auto;
     }
@@ -626,6 +657,14 @@
     .figma-dropdown-item:hover {
       background: var(--figma-color-bg-hover);
     }
+
+
+    .scale-input-wrapper {
+      position: relative;
+      width: 60px;
+    }
+
+
   </style>
 </head>
 <body>
@@ -901,25 +940,6 @@
       }
     }
 
-    function toggleScaleDropdown(nodeId) {
-      const dropdown = document.getElementById(`scale-dropdown-${nodeId}`);
-      const isVisible = dropdown.style.display !== 'none';
-      
-      // Hide all other dropdowns
-      document.querySelectorAll('.scale-dropdown').forEach(d => d.style.display = 'none');
-      
-      // Toggle this dropdown
-      dropdown.style.display = isVisible ? 'none' : 'block';
-    }
-
-    function selectScale(nodeId, scale) {
-      const config = imageConfigs.find(c => c.nodeId === nodeId);
-      if (config) {
-        config.scale = scale;
-        updateImagesList();
-      }
-    }
-
     function editCustomScale(nodeId) {
       const config = imageConfigs.find(c => c.nodeId === nodeId);
       if (!config) return;
@@ -930,13 +950,6 @@
         updateImagesList(); // Refresh to show the new custom option
       }
     }
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('.scale-input-wrapper')) {
-        document.querySelectorAll('.scale-dropdown').forEach(d => d.style.display = 'none');
-      }
-      });
 
     function updateImageConfigs() {
       // Update all configs with current quality settings
@@ -980,26 +993,24 @@
         <div class="image-controls-row">
         <div class="scale-control">
           <label class="control-label-small">Scale</label>
-          <div class="figma-combo-input">
+          <div class="scale-input-wrapper">
             <input type="text" 
                   class="figma-scale-input" 
                   value="${config.scale}x" 
                   id="scale-input-${config.nodeId}"
                   onblur="updateScaleFromInput('${config.nodeId}', this.value)"
                   onkeypress="if(event.key==='Enter') this.blur()"
-                  onfocus="this.select()">
-            <button class="figma-dropdown-btn" 
-                    onclick="toggleScaleDropdown('${config.nodeId}')"
-                    type="button">▼</button>
-            <div class="figma-dropdown-menu" 
-                id="dropdown-${config.nodeId}" 
-                style="display: none;">
-              <div class="figma-dropdown-item" onclick="selectScaleOption('${config.nodeId}', 0.5)">0.5x</div>
-              <div class="figma-dropdown-item" onclick="selectScaleOption('${config.nodeId}', 1)">1x</div>
-              <div class="figma-dropdown-item" onclick="selectScaleOption('${config.nodeId}', 2)">2x</div>
-              <div class="figma-dropdown-item" onclick="selectScaleOption('${config.nodeId}', 3)">3x</div>
-              <div class="figma-dropdown-item" onclick="selectScaleOption('${config.nodeId}', 4)">4x</div>
-            </div>
+                  onfocus="this.select()"
+                  list="scale-options-${config.nodeId}">
+            <datalist id="scale-options-${config.nodeId}">
+              <option value="0.5x">0.5x</option>
+              <option value="1x">1x</option>
+              <option value="1.5x">1.5x</option>
+              <option value="2x">2x</option>
+              <option value="2.5x">2.5x</option>
+              <option value="3x">3x</option>
+              <option value="4x">4x</option>
+            </datalist>
           </div>
         </div>
 
@@ -1236,37 +1247,6 @@
         document.getElementById(`scale-input-${nodeId}`).value = `${config.scale}x`;
       }
     }
-
-    function toggleScaleDropdown(nodeId) {
-      const dropdown = document.getElementById(`dropdown-${nodeId}`);
-      const isVisible = dropdown.style.display !== 'none';
-      
-      // Hide all other dropdowns first
-      document.querySelectorAll('.figma-dropdown-menu').forEach(d => {
-        d.style.display = 'none';
-      });
-      
-      // Toggle this dropdown
-      dropdown.style.display = isVisible ? 'none' : 'block';
-    }
-
-    function selectScaleOption(nodeId, scale) {
-      const config = imageConfigs.find(c => c.nodeId === nodeId);
-      if (!config) return;
-      
-      config.scale = scale;
-      document.getElementById(`scale-input-${nodeId}`).value = `${scale}x`;
-      document.getElementById(`dropdown-${nodeId}`).style.display = 'none';
-    }
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('.figma-combo-input')) {
-        document.querySelectorAll('.figma-dropdown-menu').forEach(d => {
-          d.style.display = 'none';
-        });
-      }
-    });
 
     async function handleExportResults(results) {
       try {
@@ -1633,52 +1613,44 @@
       }
     }
 
-    function toggleScaleDropdown(nodeId) {
-      console.log('Toggle dropdown clicked for:', nodeId);
-      const dropdown = document.getElementById(`dropdown-${nodeId}`);
-      if (!dropdown) {
-        console.error('Dropdown element not found:', `dropdown-${nodeId}`);
-        return;
-      }
+    // SIMPLE TEST - Add this at the very end
+    console.log('🚀 SCRIPT LOADED - Testing event listener setup');
+
+    // Test if elements exist
+    setTimeout(() => {
+      const buttons = document.querySelectorAll('.figma-dropdown-btn');
+      console.log('🔍 Found dropdown buttons:', buttons.length);
       
-      const isVisible = dropdown.style.display === 'block';
-      
-      // Hide all dropdowns first
-      document.querySelectorAll('.figma-dropdown-menu').forEach(d => {
-        d.style.display = 'none';
+      buttons.forEach((btn, index) => {
+        console.log(`Button ${index}:`, btn.className, btn.getAttribute('data-node-id'));
       });
       
-      // Toggle this dropdown
-      dropdown.style.display = isVisible ? 'none' : 'block';
-      console.log('Dropdown display set to:', dropdown.style.display);
+    }, 1000);
+
+    // Direct button click handler as backup
+    function handleDropdownClick(nodeId) {
+      console.log('🔥 DIRECT FUNCTION CALLED:', nodeId);
+      toggleScaleDropdown(nodeId);
     }
 
-    function selectScaleOption(nodeId, scale) {
-      console.log('Scale option selected:', nodeId, scale);
+    function updateScaleFromInput(nodeId, value) {
+      console.log('Scale input updated:', nodeId, value);
       const config = imageConfigs.find(c => c.nodeId === nodeId);
       if (!config) return;
       
-      config.scale = scale;
-      const input = document.getElementById(`scale-input-${nodeId}`);
-      if (input) {
-        input.value = `${scale}x`;
-      }
-      
-      // Hide dropdown
-      const dropdown = document.getElementById(`dropdown-${nodeId}`);
-      if (dropdown) {
-        dropdown.style.display = 'none';
+      // Extract number from text (remove 'x' if present)
+      const numValue = parseFloat(value.replace('x', ''));
+      if (!isNaN(numValue) && numValue > 0 && numValue <= 10) {
+        config.scale = numValue;
+        // Update the input to show clean format
+        document.getElementById(`scale-input-${nodeId}`).value = `${numValue}x`;
+        console.log('✅ Scale updated to:', numValue);
+      } else {
+        // Reset to current value if invalid
+        document.getElementById(`scale-input-${nodeId}`).value = `${config.scale}x`;
+        console.log('❌ Invalid scale value, reset to:', config.scale);
       }
     }
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('.figma-combo-input')) {
-        document.querySelectorAll('.figma-dropdown-menu').forEach(d => {
-          d.style.display = 'none';
-        });
-      }
-    });
   </script>
 </body>
 </html>

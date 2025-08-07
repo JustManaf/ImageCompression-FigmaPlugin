@@ -2,7 +2,7 @@
 // Show the UI
 figma.showUI(__html__, { 
   width: 320, 
-  height: 600,
+  height: 620,
   themeColors: true 
 });
 
@@ -85,6 +85,10 @@ figma.ui.onmessage = async (message) => {
 
       case 'export-images':
         await handleExportImages(message);
+        break;
+
+      case 'resize-plugin':
+        figma.ui.resize(320, message.height);
         break;
 
       case 'close-plugin':

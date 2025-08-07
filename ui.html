@@ -19,6 +19,17 @@
       color: var(--figma-color-text);
       background: var(--figma-color-bg);
       padding: 16px;
+      width: 320px;
+      max-width: 320px;
+      overflow-x: hidden;
+      box-sizing: border-box;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      max-width: 100%;
     }
 
     .header {
@@ -82,7 +93,7 @@
     }
 
     .images-section {
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .section-title {
@@ -96,16 +107,18 @@
       border: 1px solid var(--figma-color-border);
       border-radius: 6px;
       background: var(--figma-color-bg);
-      max-height: 200px;
-      overflow-y: auto;
+      width: 100%;
+      max-width: 320px;
+      overflow-x: hidden;
+      overflow-y: visible;
     }
 
     .image-item {
-      padding: 12px;
+      padding: 8px;
       border-bottom: 1px solid var(--figma-color-border);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .image-item:last-child {
@@ -124,30 +137,80 @@
       color: var(--figma-color-text);
     }
 
+    .image-name-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .image-checkbox {
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+      accent-color: var(--figma-color-bg-brand);
+    }
+
+    .image-name {
+      cursor: pointer;
+      user-select: none;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--figma-color-text);
+    }
+
     .remove-btn {
       background: none;
       border: none;
       color: var(--figma-color-text-secondary);
       cursor: pointer;
       font-size: 16px;
-      padding: 0;
+      padding: 2px;
       width: 20px;
       height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
+      border-radius: 3px;
     }
 
     .remove-btn:hover {
       color: var(--figma-color-text-danger);
+      background: var(--figma-color-bg-hover);
     }
 
     .image-controls {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
     }
+
+    .image-controls-row {
+      display: grid;
+      grid-template-columns: 55px 55px 1fr;
+      gap: 4px;
+      align-items: end;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .image-controls .control-group:nth-child(3) {
+      grid-column: 1 / -1;
+      justify-self: center;
+      max-width: 180px;
+      margin-top: 4px;
+    }
+
+    .image-controls .control-group:nth-child(3) .control-input[type="range"] {
+      width: 100%;
+      margin: 2px 0;
+    }
+
+    .image-controls .control-group:nth-child(3) .quality-display {
+      text-align: center;
+      margin-top: 4px;
+    }
+
 
     .quality-display {
       font-size: 10px;
@@ -156,17 +219,18 @@
       color: var(--figma-color-text-secondary);
     }
 
-    .control-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
     .control-label {
       font-size: 10px;
       font-weight: 500;
       min-width: 45px;
+    }
+
+    .control-label-small {
+      font-size: 9px;
+      color: var(--figma-color-text-secondary);
+      font-weight: 500;
+      margin-bottom: 2px;
+      display: block;
     }
 
     .control-input, .control-select {
@@ -179,10 +243,28 @@
       font-size: 10px;
     }
 
+    .control-select-small {
+      width: 100%;
+      padding: 3px 4px;
+      border: 1px solid var(--figma-color-border);
+      border-radius: 3px;
+      background: var(--figma-color-bg);
+      color: var(--figma-color-text);
+      font-size: 10px;
+      height: 24px;
+    }
+
+    .control-slider-small {
+      flex: 1;
+      min-width: 40px;
+      max-width: 80px;
+      height: 4px;
+    }
+
     .control-group {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 2px;
     }
 
     .control-label {
@@ -210,7 +292,7 @@
     }
 
     .presets-section {
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .presets-grid {
@@ -245,7 +327,7 @@
     }
 
     .quality-section {
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .quality-control {
@@ -272,6 +354,13 @@
       text-align: right;
     }
 
+    .quality-slider-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      max-width: 100%;
+    }
+
     .empty-state {
       text-align: center;
       padding: 24px 16px;
@@ -287,22 +376,29 @@
     .progress-section {
       margin-bottom: 16px;
       display: none;
+      text-align: center;
     }
 
     .progress-bar {
       width: 100%;
-      height: 4px;
+      max-width: 280px;
+      height: 6px;
       background: var(--figma-color-border);
-      border-radius: 2px;
+      border-radius: 3px;
       overflow: hidden;
-      margin-bottom: 8px;
+      margin: 0 auto 8px auto;
+      position: relative; 
     }
+
 
     .progress-fill {
       height: 100%;
       background: var(--figma-color-bg-brand);
       width: 0%;
       transition: width 0.3s ease;
+      border-radius: 3px;
+      min-width: 0;
+      max-width: 100%;
     }
 
     .progress-text {
@@ -321,6 +417,215 @@
       display: none;
     }
 
+    .add-button {
+      background: var(--figma-color-bg-secondary) !important;
+      color: var(--figma-color-text) !important;
+      border: 2px solid var(--figma-color-border-success) !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    .add-button:hover {
+      background: var(--figma-color-bg-hover) !important;
+    }
+
+    .add-button:disabled {
+      background: var(--figma-color-bg-disabled) !important;
+      color: var(--figma-color-text-disabled) !important;
+      border-color: var(--figma-color-border-disabled) !important;
+    }
+
+    .add-icon {
+      font-size: 16px;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .image-controls-compact {
+      display: grid;
+      grid-template-columns: 80px 70px 1fr;
+      gap: 8px;
+      align-items: end;
+      margin-top: 8px;
+    }
+
+    .compact-label {
+      font-size: 9px;
+      color: var(--figma-color-text-secondary);
+      font-weight: 500;
+      margin-bottom: 2px;
+      display: block;
+    }
+
+    .scale-dropdown, .format-dropdown {
+      width: 100%;
+      padding: 4px 6px;
+      border: 1px solid var(--figma-color-border);
+      border-radius: 4px;
+      background: var(--figma-color-bg);
+      color: var(--figma-color-text);
+      font-size: 10px;
+    }
+
+    .quality-slider-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .quality-slider-compact {
+      flex: 1;
+      min-width: 60px;
+    }
+
+    .quality-display-compact {
+      font-size: 9px;
+      font-weight: 600;
+      min-width: 28px;
+      color: var(--figma-color-text-secondary);
+    }
+
+    .quality-display-small {
+      font-size: 8px;
+      font-weight: 600;
+      min-width: 24px;
+      color: var(--figma-color-text-secondary);
+      text-align: right;
+    }
+
+    .image-item {
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--figma-color-border);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .scale-dropdown div {
+      padding: 4px 8px;
+      font-size: 10px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .scale-dropdown div:hover {
+      background: var(--figma-color-bg-hover);
+    }
+
+    .scale-text-input:focus {
+      outline: 2px solid var(--figma-color-border-brand);
+      border-color: var(--figma-color-border-brand);
+    }
+
+    .scale-dropdown-arrow:focus {
+      pointer-events: all;
+    }
+
+    .figma-combo-input {
+      position: relative;
+      display: flex;
+      width: 60px;
+    }
+
+    .figma-scale-input {
+      width: 100%;
+      height: 24px;
+      padding: 2px 20px 2px 6px;
+      border: 1px solid var(--figma-color-border);
+      border-radius: 4px;
+      background: var(--figma-color-bg);
+      color: var(--figma-color-text);
+      font-size: 11px;
+      text-align: left;
+      outline: none;
+    }
+
+    .figma-scale-input:focus {
+      border-color: var(--figma-color-border-brand);
+      box-shadow: 0 0 0 1px var(--figma-color-border-brand);
+    }
+
+    .figma-dropdown-btn {
+      position: absolute;
+      right: 2px;
+      top: 2px;
+      width: 16px;
+      height: 20px;
+      border: none;
+      background: transparent;
+      color: var(--figma-color-text-secondary);
+      font-size: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .figma-dropdown-btn:hover {
+      background: var(--figma-color-bg-hover);
+      border-radius: 2px;
+    }
+
+    .figma-dropdown-menu {
+      position: absolute;
+      top: 26px;
+      left: 0;
+      right: 0;
+      background: var(--figma-color-bg);
+      border: 1px solid var(--figma-color-border);
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      z-index: 1000;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .figma-dropdown-item {
+      padding: 6px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      color: var(--figma-color-text);
+    }
+
+    .figma-dropdown-item:hover {
+      background: var(--figma-color-bg-hover);
+    }
+
+    .figma-dropdown-item:first-child {
+      border-radius: 4px 4px 0 0;
+    }
+
+    .figma-dropdown-item:last-child {
+      border-radius: 0 0 4px 4px;
+    }
+
+    .figma-dropdown-menu {
+      position: absolute;
+      top: 26px;
+      left: 0;
+      right: 0;
+      background: var(--figma-color-bg);
+      border: 1px solid var(--figma-color-border);
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      z-index: 1000;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .figma-dropdown-item {
+      padding: 6px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      color: var(--figma-color-text);
+    }
+
+    .figma-dropdown-item:hover {
+      background: var(--figma-color-bg-hover);
+    }
   </style>
 </head>
 <body>
@@ -352,8 +657,9 @@
       </button>
     </div>
   </div>
-  <button id="addSelectedBtn" class="button" onclick="addSelectedObjects()" disabled>
-    Add Selected Objects
+  <button id="addSelectedBtn" class="button add-button" onclick="addSelectedObjects()" disabled>
+    <span class="add-icon">+</span>
+    Add Selected Images
   </button>
   <div class="images-section">
     <div class="section-title">Images to Compress (<span id="imageCount">0</span>)</div>
@@ -395,6 +701,17 @@
     let imageConfigs = [];
     let jpgQuality = 75;
     let pngQuality = 90;
+    let selectedImages = new Set();
+
+    // Update image selection
+    function updateImageSelection(nodeId, isSelected) {
+      if (isSelected) {
+        selectedImages.add(nodeId);
+      } else {
+        selectedImages.delete(nodeId);
+      }
+      console.log('Selected images:', Array.from(selectedImages));
+    }
 
     // Compression presets based on user requirements
     const PRESETS = {
@@ -527,6 +844,7 @@
 
     function removeImage(nodeId) {
       imageConfigs = imageConfigs.filter(config => config.nodeId !== nodeId);
+      selectedImages.delete(nodeId);
       updateImagesList();
       updateCompressButton();
       updateSelectionStatus();
@@ -563,6 +881,62 @@
       }
     }
 
+    function updateImageScale(nodeId, value) {
+      const config = imageConfigs.find(c => c.nodeId === nodeId);
+      if (!config) return;
+      
+      config.scale = parseFloat(value);
+      console.log(`Updated scale for ${nodeId} to ${config.scale}x`);
+    }
+
+    function updateScaleFromInput(nodeId, value) {
+      const config = imageConfigs.find(c => c.nodeId === nodeId);
+      if (!config) return;
+      
+      // Extract number from input (remove 'x' if present)
+      const numValue = parseFloat(value.replace('x', ''));
+      if (!isNaN(numValue) && numValue > 0) {
+        config.scale = numValue;
+        updateImagesList(); // Refresh to show updated value
+      }
+    }
+
+    function toggleScaleDropdown(nodeId) {
+      const dropdown = document.getElementById(`scale-dropdown-${nodeId}`);
+      const isVisible = dropdown.style.display !== 'none';
+      
+      // Hide all other dropdowns
+      document.querySelectorAll('.scale-dropdown').forEach(d => d.style.display = 'none');
+      
+      // Toggle this dropdown
+      dropdown.style.display = isVisible ? 'none' : 'block';
+    }
+
+    function selectScale(nodeId, scale) {
+      const config = imageConfigs.find(c => c.nodeId === nodeId);
+      if (config) {
+        config.scale = scale;
+        updateImagesList();
+      }
+    }
+
+    function editCustomScale(nodeId) {
+      const config = imageConfigs.find(c => c.nodeId === nodeId);
+      if (!config) return;
+      
+      const customValue = prompt('Enter custom scale (e.g., 2.5):', config.scale);
+      if (customValue && !isNaN(customValue) && parseFloat(customValue) > 0) {
+        config.scale = parseFloat(customValue);
+        updateImagesList(); // Refresh to show the new custom option
+      }
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.scale-input-wrapper')) {
+        document.querySelectorAll('.scale-dropdown').forEach(d => d.style.display = 'none');
+      }
+      });
 
     function updateImageConfigs() {
       // Update all configs with current quality settings
@@ -591,41 +965,83 @@
         return;
       }
 
-      // Simple HTML generation without complex functions
+      // Simple HTML generation
       listEl.innerHTML = imageConfigs.map(config => `
-        <div class="image-item">
-          <div class="image-header">
-            <div class="image-name">${config.nodeName}</div>
-            <button class="remove-btn" onclick="removeImage('${config.nodeId}')" title="Remove">×</button>
+      <div class="image-item">
+        <div class="image-header">
+          <div class="image-name-container">
+            <input type="checkbox" class="image-checkbox" id="checkbox-${config.nodeId}" 
+                  ${selectedImages.has(config.nodeId) ? 'checked' : ''}
+                  onchange="updateImageSelection('${config.nodeId}', this.checked)">
+            <label for="checkbox-${config.nodeId}" class="image-name">${config.nodeName}</label>
           </div>
-          
-          <div class="image-controls">
-            <div class="control-group">
-              <div class="control-label">Scale</div>
-              <input type="number" class="control-input" value="${config.scale}" min="0.1" max="10" step="0.1" 
-                    onchange="updateImageConfig('${config.nodeId}', 'scale', parseFloat(this.value))">
-            </div>
-            <div class="control-group">
-              <div class="control-label">Format</div>
-              <select class="control-select" onchange="updateImageConfig('${config.nodeId}', 'format', this.value)">
-                <option value="jpg" ${config.format === 'jpg' ? 'selected' : ''}>JPG</option>
-                <option value="png" ${config.format === 'png' ? 'selected' : ''}>PNG</option>
-              </select>
-            </div>
-            <div class="control-group">
-              <div class="control-label">Quality</div>
-                <input type="range" class="control-input" min="10" max="100" value="${config.quality}" 
-                      oninput="updateQualityDisplay('${config.nodeId}', this.value)" 
-                      onchange="updateImageConfig('${config.nodeId}', 'quality', parseInt(this.value))">
-                <span class="quality-display" id="quality-display-${config.nodeId}">${config.quality}%</span>
+          <button class="remove-btn" onclick="removeImage('${config.nodeId}')" title="Remove">×</button>
+        </div>
+        <div class="image-controls-row">
+        <div class="scale-control">
+          <label class="control-label-small">Scale</label>
+          <div class="figma-combo-input">
+            <input type="text" 
+                  class="figma-scale-input" 
+                  value="${config.scale}x" 
+                  id="scale-input-${config.nodeId}"
+                  onblur="updateScaleFromInput('${config.nodeId}', this.value)"
+                  onkeypress="if(event.key==='Enter') this.blur()"
+                  onfocus="this.select()">
+            <button class="figma-dropdown-btn" 
+                    onclick="toggleScaleDropdown('${config.nodeId}')"
+                    type="button">▼</button>
+            <div class="figma-dropdown-menu" 
+                id="dropdown-${config.nodeId}" 
+                style="display: none;">
+              <div class="figma-dropdown-item" onclick="selectScaleOption('${config.nodeId}', 0.5)">0.5x</div>
+              <div class="figma-dropdown-item" onclick="selectScaleOption('${config.nodeId}', 1)">1x</div>
+              <div class="figma-dropdown-item" onclick="selectScaleOption('${config.nodeId}', 2)">2x</div>
+              <div class="figma-dropdown-item" onclick="selectScaleOption('${config.nodeId}', 3)">3x</div>
+              <div class="figma-dropdown-item" onclick="selectScaleOption('${config.nodeId}', 4)">4x</div>
             </div>
           </div>
         </div>
+
+          <div class="format-control">
+            <label class="control-label-small">Format</label>
+            <select class="control-select-small" onchange="updateImageConfig('${config.nodeId}', 'format', this.value)">
+              <option value="jpg" ${config.format === 'jpg' ? 'selected' : ''}>JPG</option>
+              <option value="png" ${config.format === 'png' ? 'selected' : ''}>PNG</option>
+            </select>
+          </div>
+          <div class="quality-control">
+            <label class="control-label-small">Quality</label>
+            <div class="quality-slider-wrapper">
+              <input type="range" class="control-slider-small" min="10" max="100" value="${config.quality}" 
+                    oninput="updateQualityDisplay('${config.nodeId}', this.value)" 
+                    onchange="updateImageConfig('${config.nodeId}', 'quality', parseInt(this.value))">
+              <span class="quality-display-small" id="quality-display-${config.nodeId}">${config.quality}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
       `).join('');
       console.log('HTML generated successfully');
+      adjustPluginHeight();
     }
 
-    // ADD these missing functions after updateImagesList()
+    function adjustPluginHeight() {
+      const baseHeight = 620;
+      const itemHeight = 45; // Reduced item height
+      const maxVisibleItems = 5; // Show 5 items in base height
+      const additionalItems = Math.max(0, imageConfigs.length - maxVisibleItems);
+      const newHeight = Math.min(baseHeight + (additionalItems * itemHeight), 850); // Max 850px
+      
+      parent.postMessage({
+        pluginMessage: {
+          type: 'resize-plugin',
+          width: 320,  // ALWAYS keep width at 320
+          height: newHeight
+        }
+      }, '*');
+    }
+
     function applyPresetToImage(nodeId, presetName) {
       const config = imageConfigs.find(c => c.nodeId === nodeId);
       if (!config) return;
@@ -680,6 +1096,36 @@
       }
     }
 
+    function updateScaleFromText(nodeId, value) {
+      const config = imageConfigs.find(c => c.nodeId === nodeId);
+      if (!config) return;
+      
+      // Extract number from text (remove 'x' if present)
+      const numValue = parseFloat(value.replace('x', ''));
+      if (!isNaN(numValue) && numValue > 0 && numValue <= 10) {
+        config.scale = numValue;
+        // Update the input to show clean format
+        document.getElementById(`scale-input-${nodeId}`).value = `${numValue}x`;
+      } else {
+        // Reset to current value if invalid
+        document.getElementById(`scale-input-${nodeId}`).value = `${config.scale}x`;
+      }
+    }
+
+    function updateScaleFromDropdown(nodeId, value) {
+      if (!value) return; // Ignore the arrow option
+      
+      const config = imageConfigs.find(c => c.nodeId === nodeId);
+      if (!config) return;
+      
+      config.scale = parseFloat(value);
+      // Update the text input
+      document.getElementById(`scale-input-${nodeId}`).value = `${config.scale}x`;
+      
+      // Reset dropdown to arrow
+      event.target.value = "";
+    }
+
     function updateCompressButton() {
       const btn = document.getElementById('compressBtn');
       const countEl = document.getElementById('variantCount');
@@ -688,57 +1134,49 @@
       btn.disabled = imageConfigs.length === 0;
     }
 
-    function applyPreset(presetName) {
-      const preset = PRESETS[presetName];
-      if (!preset) return;
+    function adjustPluginHeight() {
+      const baseHeight = 620;
+      const itemHeight = 60; // Compact item height
+      const maxItems = Math.max(0, imageConfigs.length - 3); // Show 3 items in base height
+      const newHeight = baseHeight + (maxItems * itemHeight);
+      
+      // Send resize message to Figma
+      parent.postMessage({
+        pluginMessage: {
+          type: 'resize-plugin',
+          height: newHeight
+        }
+      }, '*');
+    }
 
-      if (imageConfigs.length === 0) {
-        showError('Please add images first');
+    function applyPreset(presetName) {
+      // Check if any images are selected
+      if (selectedImages.size === 0) {
+        showError('Please select the images you want to apply this preset to.');
         return;
       }
 
-      // Ask for confirmation when applying to all images
-      if (imageConfigs.length > 1) {
-        if (!confirm(`Apply ${presetName} preset to all ${imageConfigs.length} images?`)) {
-          return;
-        }
-      }
+      const preset = PRESETS[presetName];
+      if (!preset) return;
 
-      // Apply preset to all images
-      imageConfigs.forEach(config => {
-        config.scale = preset.scale;
-        config.format = preset.format;
-        config.quality = preset.quality;
+      // Apply preset only to selected images
+      selectedImages.forEach(nodeId => {
+        const config = imageConfigs.find(c => c.nodeId === nodeId);
+        if (config) {
+          config.scale = preset.scale;
+          config.format = preset.format;
+          config.quality = preset.quality;
+        }
       });
 
-      // Update quality sliders
-      if (preset.format === 'jpg') {
-        document.getElementById('jpgQuality').value = preset.quality;
-        document.getElementById('jpgQualityValue').textContent = preset.quality + '%';
-        jpgQuality = preset.quality;
-      } 
-      else {
-        document.getElementById('pngQuality').value = preset.quality;
-        document.getElementById('pngQualityValue').textContent = preset.quality + '%';
-        pngQuality = preset.quality;
-      }
+      // CLEAR SELECTIONS after applying preset
+      selectedImages.clear();
 
+      // Refresh the UI (this will uncheck all checkboxes)
       updateImagesList();
-      hideError();
-
-      // Update quality sliders
-      if (preset.format === 'jpg') {
-        document.getElementById('jpgQuality').value = preset.quality;
-        document.getElementById('jpgQualityValue').textContent = preset.quality + '%';
-        jpgQuality = preset.quality;
-      } else {
-        document.getElementById('pngQuality').value = preset.quality;
-        document.getElementById('pngQualityValue').textContent = preset.quality + '%';
-        pngQuality = preset.quality;
-      }
-
-      updateImagesList();
-      hideError();
+      updateCompressButton();
+      
+      console.log(`Applied ${presetName} preset and cleared selections`);
     }
 
     async function compressAndExport() {
@@ -773,232 +1211,325 @@
       }
     }
 
-    function handleExportResults(results) {
-      console.log('Export results received:', results);
+    function downloadSingleImage(compressedBytes, nodeName, format) {
+      const blob = new Blob([new Uint8Array(compressedBytes)]);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${nodeName}.${format}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function updateScaleFromInput(nodeId, value) {
+      const config = imageConfigs.find(c => c.nodeId === nodeId);
+      if (!config) return;
       
-      const btn = document.getElementById('compressBtn');
-      btn.textContent = 'Processing images...';
+      // Extract number from input (remove 'x' if present)
+      const numValue = parseFloat(value.replace('x', ''));
+      if (!isNaN(numValue) && numValue > 0 && numValue <= 10) {
+        config.scale = numValue;
+        // Update input to show clean format
+        document.getElementById(`scale-input-${nodeId}`).value = `${numValue}x`;
+      } else {
+        // Reset to current value if invalid
+        document.getElementById(`scale-input-${nodeId}`).value = `${config.scale}x`;
+      }
+    }
+
+    function toggleScaleDropdown(nodeId) {
+      const dropdown = document.getElementById(`dropdown-${nodeId}`);
+      const isVisible = dropdown.style.display !== 'none';
       
-      // Process each exported image
-      results.forEach(async (result, index) => {
-        if (result.success) {
-          btn.textContent = `Compressing ${index + 1}/${results.length}...`;
-          
-          // Compress the image
-          try {
-            const compressedBytes = await compressImage(result.bytes, result.config);
-            
-            // Download the compressed image
-            const blob = new Blob([new Uint8Array(compressedBytes)]);
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = result.filename;
-            a.click();
-            URL.revokeObjectURL(url);
-            
-          } catch (error) {
-            console.error('Compression failed:', error);
-            showError(`Failed to compress ${result.nodeName}: ${error.message}`);
-          }
-        } else {
-          showError(`Export failed for ${result.nodeName}: ${result.error}`);
-        }
+      // Hide all other dropdowns first
+      document.querySelectorAll('.figma-dropdown-menu').forEach(d => {
+        d.style.display = 'none';
       });
       
-      // Reset button
-      btn.textContent = `Compress & Export (${imageConfigs.length} variants)`;
-      btn.disabled = false;
-      showSuccess(`Exported ${results.filter(r => r.success).length} images`);
+      // Toggle this dropdown
+      dropdown.style.display = isVisible ? 'none' : 'block';
     }
+
+    function selectScaleOption(nodeId, scale) {
+      const config = imageConfigs.find(c => c.nodeId === nodeId);
+      if (!config) return;
+      
+      config.scale = scale;
+      document.getElementById(`scale-input-${nodeId}`).value = `${scale}x`;
+      document.getElementById(`dropdown-${nodeId}`).style.display = 'none';
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.figma-combo-input')) {
+        document.querySelectorAll('.figma-dropdown-menu').forEach(d => {
+          d.style.display = 'none';
+        });
+      }
+    });
 
     async function handleExportResults(results) {
       try {
+        // SINGLE IMAGE - Download directly (no ZIP)
+        if (results.length === 1 && results[0].success) {
+          const result = results[0];
+          showProgress(25, `Compressing: ${result.nodeName}`);
+          
+          try {
+            console.log('Single image processing:', result.nodeName);
+            
+            // Convert to file for compression
+            const blob = new Blob([result.originalBytes], { 
+              type: result.config.format === 'jpg' ? 'image/jpeg' : 'image/png' 
+            });
+            const file = new File([blob], `${result.nodeName}.${result.config.format}`, { 
+              type: blob.type 
+            });
+
+            // Compress single image using same logic as multi-image
+            let compressedBytes;
+            if (result.config.format === 'jpg') {
+              const options = {
+                maxSizeMB: 0.5,
+                maxWidthOrHeight: 1920,
+                useWebWorker: false,
+                quality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
+                initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
+                alwaysKeepResolution: false,
+                fileType: 'image/jpeg'
+              };
+              const compressedFile = await imageCompression(file, options);
+              compressedBytes = await compressedFile.arrayBuffer();
+            } else if (result.config.format === 'png') {
+              // PNG compression with same aggressive logic
+              const pngQuality = result.config.quality / 100;
+              const originalSizeMB = file.size / (1024 * 1024);
+              const isComplexImage = originalSizeMB > 0.18;
+
+              const targetSizeMB = isComplexImage ? 
+                (pngQuality > 0.9 ? 0.5 : pngQuality > 0.8 ? 0.3 : pngQuality > 0.7 ? 0.2 : 
+                pngQuality > 0.5 ? 0.15 : pngQuality > 0.3 ? 0.1 : 0.08) :
+                (pngQuality > 0.9 ? 0.15 : pngQuality > 0.8 ? 0.08 : pngQuality > 0.7 ? 0.06 : 
+                pngQuality > 0.5 ? 0.05 : pngQuality > 0.3 ? 0.04 : 0.03);
+
+              const figmaScale = result.config.scale;
+              let maxDimension;
+              if (figmaScale >= 3.0) {
+                maxDimension = 6144;
+              } else if (figmaScale >= 2.5) {
+                maxDimension = 5120;
+              } else if (figmaScale >= 2.0) {
+                maxDimension = 4096;
+              } else if (figmaScale >= 1.5) {
+                maxDimension = 3072;
+              } else {
+                maxDimension = 2048;
+              }
+
+              const ultraOptions = {
+                maxSizeMB: targetSizeMB,
+                maxWidthOrHeight: maxDimension,
+                useWebWorker: false,
+                quality: Math.max(0.4, pngQuality * 0.7),
+                fileType: 'image/png',
+                preserveExif: false,
+                alwaysKeepResolution: true,
+                maxIteration: 30
+              };
+
+              const compressedFile = await imageCompression(file, ultraOptions);
+              compressedBytes = await compressedFile.arrayBuffer();
+            }
+
+            // Download single image directly
+            showProgress(75, 'Creating download...');
+            const finalBlob = new Blob([new Uint8Array(compressedBytes)]);
+            const url = URL.createObjectURL(finalBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${result.nodeName}@${result.config.scale}x_${result.config.quality}.${result.config.format}`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showProgress(100, 'Complete!');
+            hideProgress();
+            showSuccess(`Exported ${result.nodeName}`);
+            return; // EXIT - No ZIP needed
+            
+          } catch (error) {
+            console.error('Single image compression failed:', error);
+            showError(`Failed to compress ${result.nodeName}: ${error.message}`);
+            hideProgress();
+            return;
+          }
+        }
+
+        // Handle single image export failure
+        if (results.length === 1 && !results[0].success) {
+          showError(`Export failed for ${results[0].nodeName}: ${results[0].error}`);
+          hideProgress();
+          return;
+        }
+
+        // MULTIPLE IMAGES - Create ZIP (existing logic)
         const compressedImages = [];
         let processed = 0;
 
-       for (const result of results) {
+        for (const result of results) {
           if (!result.success) {
-          console.error('Export failed for:', result.nodeName, result.error);
-          showError(`Export failed for ${result.nodeName}: ${result.error}`);
-          processed++;
-          showProgress((processed / results.length) * 50, `Failed: ${result.nodeName}`);
-          continue;
+            console.error('Export failed for:', result.nodeName, result.error);
+            showError(`Export failed for ${result.nodeName}: ${result.error}`);
+            processed++;
+            showProgress((processed / results.length) * 50, `Failed: ${result.nodeName}`);
+            continue;
           }
 
-        showProgress((processed / results.length) * 50, `Compressing: ${result.nodeName}`);
-        try {
-          console.log('Processing:', result.nodeName, 'Size:', result.originalBytes.length, 'Format:', result.config.format);
+          showProgress((processed / results.length) * 50, `Compressing: ${result.nodeName}`);
+          try {
+            console.log('Processing:', result.nodeName, 'Size:', result.originalBytes.length, 'Format:', result.config.format);
 
-          // Convert Uint8Array to File for compression
-          const blob = new Blob([result.originalBytes], { 
-          type: result.config.format === 'jpg' ? 'image/jpeg' : 'image/png' 
-          });
-        
-          console.log('Blob created:', blob.size, blob.type);
-          const file = new File([blob], `${result.nodeName}.${result.config.format}`, { 
-          type: blob.type 
-          });
-          console.log('File created:', file.size, file.type);
-
-          // Format-specific compression options
-          let options;
-          let compressedBytes;
-          if (result.config.format === 'jpg') {
-            // JPG compression
-            options = {
-              maxSizeMB: 0.5,
-              maxWidthOrHeight: 1920,
-              useWebWorker: false,
-              quality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
-              initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
-              alwaysKeepResolution: false,
-              fileType: 'image/jpeg'
-            };
+            // Convert Uint8Array to File for compression
+            const blob = new Blob([result.originalBytes], { 
+              type: result.config.format === 'jpg' ? 'image/jpeg' : 'image/png' 
+            });
             
-            console.log('JPG Compression options:', options);
-            const compressedFile = await imageCompression(file, options);
-            console.log('JPG Compression successful:', compressedFile.size);
-            compressedBytes = await compressedFile.arrayBuffer();
-          }
-          else if (result.config.format === 'png') {
-            // AGGRESSIVE PNG COMPRESSION
-            const pngQuality = result.config.quality / 100;
-            console.log(`Ultra PNG Compression: Quality ${Math.round(pngQuality*100)}%`);
-            
+            const file = new File([blob], `${result.nodeName}.${result.config.format}`, { 
+              type: blob.type 
+            });
 
-            // Content-aware compression based on original file size
-            const originalSizeMB = file.size / (1024 * 1024);
-            const isComplexImage = originalSizeMB > 0.18; // 180KB+ = complex (179KB=simple, 192KB=complex)
-
-            // AGGRESSIVE size limits
-            const targetSizeMB = isComplexImage ? 
-              // Higher quality for complex images
-              (pngQuality > 0.9 ? 0.5 :    // 90-100%: 500KB max
-              pngQuality > 0.8 ? 0.3 :     // 80-90%:  300KB max
-              pngQuality > 0.7 ? 0.2 :     // 70-80%:  200KB max 
-              pngQuality > 0.5 ? 0.15 :    // 50-70%:  150KB max
-              pngQuality > 0.3 ? 0.1 :     // 30-50%:  100KB max
-              0.08) :                      // <30%:    80KB max
-              // Aggressive for simple images
-              (pngQuality > 0.9 ? 0.15 :   // 90-100%: 150KB max
-              pngQuality > 0.8 ? 0.08 :    // 80-90%:  80KB max  
-              pngQuality > 0.7 ? 0.06 :    // 70-80%:  60KB max
-              pngQuality > 0.5 ? 0.05 :    // 50-70%:  50KB max
-              pngQuality > 0.3 ? 0.04 :    // 30-50%:  40KB max
-              0.03);                       // <30%:    30KB max
-
-            console.log(`Content-aware compression: ${isComplexImage ? 'Complex' : 'Simple'} image, target: ${targetSizeMB}MB`);  // <30%: 50KB max
-
-            const figmaScale = result.config.scale;
-            let maxDimension;
-            if (figmaScale >= 3.0) {
-              maxDimension = 6144; // 3x scale
-            } else if (figmaScale >= 2.5) {
-              maxDimension = 5120; // 2.5x scale
-            } else if (figmaScale >= 2.0) {
-              maxDimension = 4096; // 2x scale
-            } else if (figmaScale >= 1.5) {
-              maxDimension = 3072; // 1.5x scale
-            } else {
-              maxDimension = 2048; // 1x scale
-            }
-
-            // Ultra-aggressive compression options
-            const ultraOptions = {
-              maxSizeMB: targetSizeMB,
-              maxWidthOrHeight: maxDimension, // Keep resolution
-              useWebWorker: false,
-              quality: Math.max(0.4, pngQuality * 0.7), // Maintain high quality like OlivePress
-              fileType: 'image/png',
-              preserveExif: false,
-              alwaysKeepResolution: true,
-              maxIteration: 30 // More compression iterations
-            };
-        
-            console.log(`PNG Ultra Options:`, ultraOptions);
-    
-            try {
-              const compressedFile = await imageCompression(file, ultraOptions);
-              compressedBytes = await compressedFile.arrayBuffer();
-              const compressionRatio = Math.round((1 - compressedFile.size / file.size) * 100);
-              console.log(`PNG Ultra Complete: ${file.size} → ${compressedFile.size} bytes (${compressionRatio}% reduction)`);
+            // Format-specific compression options
+            let compressedBytes;
+            if (result.config.format === 'jpg') {
+              // JPG compression
+              const options = {
+                maxSizeMB: 0.5,
+                maxWidthOrHeight: 1920,
+                useWebWorker: false,
+                quality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
+                initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
+                alwaysKeepResolution: false,
+                fileType: 'image/jpeg'
+              };
               
-              // Smart fallback for better compression if needed
-              if (compressedFile.size > (targetSizeMB * 1024 * 1024)) {
-                console.log('Applying smart compression fallback...');                  
-                const smartOptions = {
-                  maxSizeMB: targetSizeMB * 0.8, // 20% more aggressive
-                  maxWidthOrHeight: maxDimension,
-                  useWebWorker: false,
-                  quality: Math.max(0.3, pngQuality * 0.6), // More aggressive quality
-                  fileType: 'image/png',
-                  preserveExif: false,
-                  alwaysKeepResolution: true, // Keep dimensions
-                  maxIteration: 50 // More iterations
-                };
-                 
-                const smartFile = await imageCompression(file, smartOptions);
-                if (smartFile.size < compressedFile.size) {
-                  compressedBytes = await smartFile.arrayBuffer();
-                  const smartRatio = Math.round((1 - smartFile.size / file.size) * 100);
-                  console.log(`PNG Smart Complete: ${file.size} → ${smartFile.size} bytes (${smartRatio}% reduction)`);
+              const compressedFile = await imageCompression(file, options);
+              compressedBytes = await compressedFile.arrayBuffer();
+            }
+            else if (result.config.format === 'png') {
+              // AGGRESSIVE PNG COMPRESSION
+              const pngQuality = result.config.quality / 100;
+              
+              // Content-aware compression based on original file size
+              const originalSizeMB = file.size / (1024 * 1024);
+              const isComplexImage = originalSizeMB > 0.18;
+
+              // AGGRESSIVE size limits
+              const targetSizeMB = isComplexImage ? 
+                (pngQuality > 0.9 ? 0.5 : pngQuality > 0.8 ? 0.3 : pngQuality > 0.7 ? 0.2 : 
+                pngQuality > 0.5 ? 0.15 : pngQuality > 0.3 ? 0.1 : 0.08) :
+                (pngQuality > 0.9 ? 0.15 : pngQuality > 0.8 ? 0.08 : pngQuality > 0.7 ? 0.06 : 
+                pngQuality > 0.5 ? 0.05 : pngQuality > 0.3 ? 0.04 : 0.03);
+
+              const figmaScale = result.config.scale;
+              let maxDimension;
+              if (figmaScale >= 3.0) {
+                maxDimension = 6144;
+              } else if (figmaScale >= 2.5) {
+                maxDimension = 5120;
+              } else if (figmaScale >= 2.0) {
+                maxDimension = 4096;
+              } else if (figmaScale >= 1.5) {
+                maxDimension = 3072;
+              } else {
+                maxDimension = 2048;
+              }
+
+              // Ultra-aggressive compression options
+              const ultraOptions = {
+                maxSizeMB: targetSizeMB,
+                maxWidthOrHeight: maxDimension,
+                useWebWorker: false,
+                quality: Math.max(0.4, pngQuality * 0.7),
+                fileType: 'image/png',
+                preserveExif: false,
+                alwaysKeepResolution: true,
+                maxIteration: 30
+              };
+      
+              try {
+                const compressedFile = await imageCompression(file, ultraOptions);
+                compressedBytes = await compressedFile.arrayBuffer();
+                
+                // Smart fallback for better compression if needed
+                if (compressedFile.size > (targetSizeMB * 1024 * 1024)) {
+                  const smartOptions = {
+                    maxSizeMB: targetSizeMB * 0.8,
+                    maxWidthOrHeight: maxDimension,
+                    useWebWorker: false,
+                    quality: Math.max(0.3, pngQuality * 0.6),
+                    fileType: 'image/png',
+                    preserveExif: false,
+                    alwaysKeepResolution: true,
+                    maxIteration: 50
+                  };
+                  
+                  const smartFile = await imageCompression(file, smartOptions);
+                  if (smartFile.size < compressedFile.size) {
+                    compressedBytes = await smartFile.arrayBuffer();
+                  }
                 }
+              } catch (error) {
+                console.error('PNG Ultra compression failed:', error);
+                throw error;
               }
             }
-              catch (error) {
-              console.error('PNG Ultra compression failed:', error);
-              throw error;
+            else {
+              throw new Error(`Unsupported format: ${result.config.format}`);
             }
+
+            // Generate filename and add to results
+            const filename = `${result.nodeName}@${result.config.scale}x_${result.config.quality}.${result.config.format}`;
+            compressedImages.push({
+              filename,
+              data: new Uint8Array(compressedBytes),
+              originalSize: result.originalBytes.length,
+              compressedSize: compressedBytes.byteLength
+            });
+            
+          } catch (compressionError) {
+            console.error('Compression failed for:', result.nodeName, compressionError);
+            showError(`Compression failed for ${result.nodeName}: ${compressionError.message}`);
+          
+            // Add the original image without compression as fallback
+            const filename = `${result.nodeName}@${result.config.scale}x_original.${result.config.format}`;
+            compressedImages.push({
+              filename,
+              data: result.originalBytes,
+              originalSize: result.originalBytes.length,
+              compressedSize: result.originalBytes.length
+            });
           }
-          else {
-            throw new Error(`Unsupported format: ${result.config.format}`);
-          }
-          // Generate filename and add to results
-          const filename = `${result.nodeName}@${result.config.scale}x_${result.config.quality}.${result.config.format}`;
-          compressedImages.push({
-            filename,
-            data: new Uint8Array(compressedBytes),
-            originalSize: result.originalBytes.length,
-            compressedSize: compressedBytes.byteLength
-          });
-          console.log('Successfully compressed:', filename, 'Original:', result.originalBytes.length, 'Compressed:', compressedBytes.byteLength);
+          processed++;
+          showProgress(50 + (processed / results.length) * 50, `Processed: ${result.nodeName}`);
         }
 
-          catch (compressionError) {
-          console.error('Compression failed for:', result.nodeName, compressionError);
-          showError(`Compression failed for ${result.nodeName}: ${compressionError.message}`);
-        
-          // Add the original image without compression as fallback
-          const filename = `${result.nodeName}@${result.config.scale}x_original.${result.config.format}`;
-          compressedImages.push({
-          filename,
-          data: result.originalBytes,
-          originalSize: result.originalBytes.length,
-          compressedSize: result.originalBytes.length
-          });
-          }
-        processed++;
-        showProgress(50 + (processed / results.length) * 50, `Processed: ${result.nodeName}`);
+        if (compressedImages.length === 0) {
+          showError('No images were successfully processed');
+          hideProgress();
+          return;
         }
 
-      if (compressedImages.length === 0) {
-        showError('No images were successfully processed');
+        // Create and download ZIP
+        showProgress(100, 'Creating download...');
+        await downloadAsZip(compressedImages);
         hideProgress();
-        return;
+        showSuccess(`Successfully processed ${compressedImages.length} image${compressedImages.length === 1 ? '' : 's'}!`);
+        
+      } catch (error) {
+        console.error('Processing failed:', error);
+        showError('Processing failed: ' + error.message);
+        hideProgress();
       }
-
-      // Create and download ZIP
-      showProgress(100, 'Creating download...');
-      await downloadAsZip(compressedImages);
-      hideProgress();
-      showSuccess(`Successfully processed ${compressedImages.length} image${compressedImages.length === 1 ? '' : 's'}!`);
-    } catch (error) {
-      console.error('Processing failed:', error);
-      showError('Processing failed: ' + error.message);
-      hideProgress();
-      }
-  }
+    }
 
     async function downloadAsZip(images) {
       // Simple ZIP creation (basic implementation)
@@ -1035,11 +1566,16 @@
 
     function showError(message) {
       const errorEl = document.getElementById('errorMessage');
-        if (errorEl) {
-          errorEl.textContent = message;
-          errorEl.style.display = 'block';
-        }
-        console.error('Plugin Error:', message);
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.style.display = 'block';
+        
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+          hideError();
+        }, 5000);
+      }
+      console.error('Plugin Error:', message);
     }
 
     function hideError() {
@@ -1082,6 +1618,67 @@
 
     // Load JSZip on page load
     loadJSZip().catch(console.error);
+
+    function updateScaleFromInput(nodeId, value) {
+      console.log('Scale input updated:', nodeId, value);
+      const config = imageConfigs.find(c => c.nodeId === nodeId);
+      if (!config) return;
+      
+      const numValue = parseFloat(value.replace('x', ''));
+      if (!isNaN(numValue) && numValue > 0 && numValue <= 10) {
+        config.scale = numValue;
+        document.getElementById(`scale-input-${nodeId}`).value = `${numValue}x`;
+      } else {
+        document.getElementById(`scale-input-${nodeId}`).value = `${config.scale}x`;
+      }
+    }
+
+    function toggleScaleDropdown(nodeId) {
+      console.log('Toggle dropdown clicked for:', nodeId);
+      const dropdown = document.getElementById(`dropdown-${nodeId}`);
+      if (!dropdown) {
+        console.error('Dropdown element not found:', `dropdown-${nodeId}`);
+        return;
+      }
+      
+      const isVisible = dropdown.style.display === 'block';
+      
+      // Hide all dropdowns first
+      document.querySelectorAll('.figma-dropdown-menu').forEach(d => {
+        d.style.display = 'none';
+      });
+      
+      // Toggle this dropdown
+      dropdown.style.display = isVisible ? 'none' : 'block';
+      console.log('Dropdown display set to:', dropdown.style.display);
+    }
+
+    function selectScaleOption(nodeId, scale) {
+      console.log('Scale option selected:', nodeId, scale);
+      const config = imageConfigs.find(c => c.nodeId === nodeId);
+      if (!config) return;
+      
+      config.scale = scale;
+      const input = document.getElementById(`scale-input-${nodeId}`);
+      if (input) {
+        input.value = `${scale}x`;
+      }
+      
+      // Hide dropdown
+      const dropdown = document.getElementById(`dropdown-${nodeId}`);
+      if (dropdown) {
+        dropdown.style.display = 'none';
+      }
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.figma-combo-input')) {
+        document.querySelectorAll('.figma-dropdown-menu').forEach(d => {
+          d.style.display = 'none';
+        });
+      }
+    });
   </script>
 </body>
 </html>

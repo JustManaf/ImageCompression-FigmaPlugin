@@ -137,8 +137,9 @@ async function handleExportImages(exportData: any) {
         continue;
       }
 
-      // Determine export format based on config
-      const format = config.format.toUpperCase() as 'PNG' | 'JPG';
+      // Determine export format and scale with fallbacks to prevent runtime errors
+      const format = (config.format || 'PNG').toUpperCase() as 'PNG' | 'JPG';
+      const scale = typeof config.scale === 'number' && config.scale > 0 ? config.scale : 1;
       
       // Create export settings
       const exportSettings: ExportSettings = {
@@ -188,5 +189,5 @@ async function handleExportImages(exportData: any) {
   }
 }
 
-// Keep plugin running until explicitly closed
+// Keep plugin running until closed
 console.log('Image Compression plugin started');

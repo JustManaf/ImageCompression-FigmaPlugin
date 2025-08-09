@@ -118,8 +118,11 @@ async function handleExportImages(exportData) {
                 });
                 continue;
             }
-            // Determine export format based on config
-            const format = config.format.toUpperCase();
+
+            // Determine export format and scale with fallbacks to prevent runtime errors
+            const format = (config.format || 'PNG').toUpperCase();
+            const scale = typeof config.scale === 'number' && config.scale > 0 ? config.scale : 1;
+            
             // Create export settings
             const exportSettings = {
                 format: format,

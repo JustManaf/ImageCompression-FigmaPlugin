@@ -105,7 +105,7 @@ async function handleExportImages(exportData) {
         }
         const exportResults = [];
         for (const config of imageConfigs) {
-            // Find node by ID directly (not from current selection!)
+            // Find node by ID directly
             const node = await figma.getNodeByIdAsync(config.nodeId);
             if (!node) {
                 console.error('Node not found:', config.nodeId);
@@ -120,7 +120,7 @@ async function handleExportImages(exportData) {
             }
             // Determine export format based on config
             const format = config.format.toUpperCase();
-            // Create export settings (NO quality parameter)
+            // Create export settings
             const exportSettings = {
                 format: format,
                 constraint: {
@@ -165,5 +165,5 @@ async function handleExportImages(exportData) {
         });
     }
 }
-// Keep plugin running until explicitly closed
+// Keep plugin running until closed
 console.log('Image Compression plugin started');

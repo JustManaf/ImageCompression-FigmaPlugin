@@ -122,7 +122,7 @@ async function handleExportImages(exportData: any) {
 
     const exportResults = [];
     for (const config of imageConfigs) {
-      // Find node by ID directly (not from current selection!)
+      // Find node by ID directly
       const node = await figma.getNodeByIdAsync(config.nodeId) as SceneNode;
       
       if (!node) {
@@ -140,7 +140,7 @@ async function handleExportImages(exportData: any) {
       // Determine export format based on config
       const format = config.format.toUpperCase() as 'PNG' | 'JPG';
       
-      // Create export settings (NO quality parameter)
+      // Create export settings
       const exportSettings: ExportSettings = {
         format: format,
         constraint: {

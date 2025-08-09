@@ -1,4 +1,3 @@
-<script>//Testing GitHub Push</script>
 <script src="https://cdn.jsdelivr.net/gh/psych0der/pngquantjs@master/demo/pngquant.min.js"></script>
 <!DOCTYPE html>
 <html>
@@ -532,7 +531,7 @@
     }
 
     .figma-dropdown-btn {
-      background: red !important;  /* Temporary - makes button visible */
+      background: red !important;
       opacity: 0.8 !important;
     }
 
@@ -752,7 +751,7 @@
       console.log('Selected images:', Array.from(selectedImages));
     }
 
-    // Compression presets based on user requirements
+    // Compression presets
     const PRESETS = {
       'mobile': { scale: 3, format: 'jpg', quality: 75, target: '±180KB' },
       'tablet': { scale: 2, format: 'jpg', quality: 75, target: '±300KB' },
@@ -815,7 +814,7 @@
 
     function handleSelectionChanged(message) {
       currentSelection = message.selection || [];
-      updateSelectionStatus(); // Use the new intelligent status function
+      updateSelectionStatus();
     }
 
     function updateSelectionStatus() {
@@ -843,24 +842,24 @@
     }
 
     function addSelectedObjects() {
-      console.log('addSelectedObjects called'); // DEBUG
-      console.log('currentSelection:', currentSelection); // DEBUG
+      console.log('addSelectedObjects called');
+      console.log('currentSelection:', currentSelection);
 
       if (currentSelection.length === 0) {
         showError('No objects selected');
         return;
       }
 
-      console.log('Adding objects to imageConfigs'); // DEBUG
+      console.log('Adding objects to imageConfigs');
 
       // Add selected objects to image configs
       currentSelection.forEach(node => {
         if (imageConfigs.find(config => config.nodeId === node.id)) {
-          console.log('Skipping duplicate:', node.name); // DEBUG
+          console.log('Skipping duplicate:', node.name); 
           return; // Skip if already added
         }
 
-        console.log('Adding node:', node.name); // DEBUG
+        console.log('Adding node:', node.name);
 
         // Determine smart defaults
         const suggestedFormat = node.hasImageFill ? 'jpg' : 'png';
@@ -875,7 +874,7 @@
         });
       });
 
-      console.log('imageConfigs after adding:', imageConfigs); // DEBUG
+      console.log('imageConfigs after adding:', imageConfigs);
       updateImagesList();
       updateCompressButton();
       updateSelectionStatus(); 
@@ -978,7 +977,7 @@
         return;
       }
 
-      // Simple HTML generation
+      // HTML generation
       listEl.innerHTML = imageConfigs.map(config => `
       <div class="image-item">
         <div class="image-header">
@@ -994,14 +993,15 @@
         <div class="scale-control">
           <label class="control-label-small">Scale</label>
           <div class="scale-input-wrapper">
-            <input type="text" 
-                  class="figma-scale-input" 
-                  value="${config.scale}x" 
-                  id="scale-input-${config.nodeId}"
-                  onblur="updateScaleFromInput('${config.nodeId}', this.value)"
-                  onkeypress="if(event.key==='Enter') this.blur()"
-                  onfocus="this.select()"
-                  list="scale-options-${config.nodeId}">
+          <input type="text" 
+                class="figma-scale-input" 
+                value="${config.scale}x" 
+                id="scale-input-${config.nodeId}"
+                onblur="updateScaleFromInput('${config.nodeId}', this.value)"
+                onkeypress="if(event.key==='Enter') this.blur()"
+                onfocus="showAllScaleOptions('${config.nodeId}')"
+                onclick="showAllScaleOptions('${config.nodeId}')"
+                list="scale-options-${config.nodeId}">
             <datalist id="scale-options-${config.nodeId}">
               <option value="0.5x">0.5x</option>
               <option value="1x">1x</option>
@@ -1039,15 +1039,15 @@
 
     function adjustPluginHeight() {
       const baseHeight = 620;
-      const itemHeight = 45; // Reduced item height
-      const maxVisibleItems = 5; // Show 5 items in base height
+      const itemHeight = 45;
+      const maxVisibleItems = 5;
       const additionalItems = Math.max(0, imageConfigs.length - maxVisibleItems);
       const newHeight = Math.min(baseHeight + (additionalItems * itemHeight), 850); // Max 850px
       
       parent.postMessage({
         pluginMessage: {
           type: 'resize-plugin',
-          width: 320,  // ALWAYS keep width at 320
+          width: 320,
           height: newHeight
         }
       }, '*');
@@ -1148,7 +1148,7 @@
     function adjustPluginHeight() {
       const baseHeight = 620;
       const itemHeight = 60; // Compact item height
-      const maxItems = Math.max(0, imageConfigs.length - 3); // Show 3 items in base height
+      const maxItems = Math.max(0, imageConfigs.length - 3);
       const newHeight = baseHeight + (maxItems * itemHeight);
       
       // Send resize message to Figma
@@ -1183,7 +1183,7 @@
       // CLEAR SELECTIONS after applying preset
       selectedImages.clear();
 
-      // Refresh the UI (this will uncheck all checkboxes)
+      // Refresh the UI
       updateImagesList();
       updateCompressButton();
       
@@ -1248,9 +1248,26 @@
       }
     }
 
+    function showAllScaleOptions(nodeId) {
+      const input = document.getElementById(`scale-input-${nodeId}`);
+      
+      // Clear the input temporarily to show all options
+      const currentValue = input.value;
+      input.value = '';
+      // Trigger the datalist to show all options
+      input.focus();
+      // Restore the value after a brief moment
+      setTimeout(() => {
+        if (document.activeElement === input) {
+          input.value = currentValue;
+          input.select();
+        }
+      }, 50);
+    }
+
     async function handleExportResults(results) {
       try {
-        // SINGLE IMAGE - Download directly (no ZIP)
+        // SINGLE IMAGE - Download directly
         if (results.length === 1 && results[0].success) {
           const result = results[0];
           showProgress(25, `Compressing: ${result.nodeName}`);
@@ -1334,7 +1351,7 @@
             showProgress(100, 'Complete!');
             hideProgress();
             showSuccess(`Exported ${result.nodeName}`);
-            return; // EXIT - No ZIP needed
+            return; // EXIT
             
           } catch (error) {
             console.error('Single image compression failed:', error);
@@ -1351,7 +1368,7 @@
           return;
         }
 
-        // MULTIPLE IMAGES - Create ZIP (existing logic)
+        // MULTIPLE IMAGES - Create ZIP
         const compressedImages = [];
         let processed = 0;
 
@@ -1377,7 +1394,7 @@
               type: blob.type 
             });
 
-            // Format-specific compression options
+            // Format specific compression options
             let compressedBytes;
             if (result.config.format === 'jpg') {
               // JPG compression
@@ -1423,7 +1440,7 @@
                 maxDimension = 2048;
               }
 
-              // Ultra-aggressive compression options
+              // Ultra aggressive compression options
               const ultraOptions = {
                 maxSizeMB: targetSizeMB,
                 maxWidthOrHeight: maxDimension,
@@ -1512,7 +1529,7 @@
     }
 
     async function downloadAsZip(images) {
-      // Simple ZIP creation (basic implementation)
+      // Simple ZIP creation
       const zip = new JSZip();
       images.forEach(image => {
         zip.file(image.filename, image.data);
@@ -1612,8 +1629,6 @@
         document.getElementById(`scale-input-${nodeId}`).value = `${config.scale}x`;
       }
     }
-
-    // SIMPLE TEST - Add this at the very end
     console.log('🚀 SCRIPT LOADED - Testing event listener setup');
 
     // Test if elements exist

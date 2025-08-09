@@ -663,7 +663,7 @@
   <div class="header">
     <div class="title">Image Compression</div>
     <div style="color:rgb(0, 0, 0)" id="selectionStatus" class="selection-status no-selection">
-      Please select objects in Figma first
+      Please select images in Figma first
     </div>
   </div>
   <div id="errorMessage" class="error-message"></div>
@@ -698,7 +698,7 @@
       <div class="empty-state">
         <div class="empty-icon">📷</div>
         <div>No images added yet</div>
-        <div style="font-size: 10px; margin-top: 4px;">Select objects in Figma and click "Add Selected Objects"</div>
+        <div style="font-size: 10px; margin-top: 4px;">Select images in Figma and click "Add Selected images"</div>
       </div>
     </div>
   </div>
@@ -829,7 +829,7 @@
       } else {
         // No images in list and no current selection
         statusEl.className = 'selection-status no-selection';
-        statusEl.textContent = 'Please select objects in Figma first';
+        statusEl.textContent = 'Please select images in Figma first';
         addBtn.disabled = true;
       }
     }
@@ -839,7 +839,7 @@
       console.log('currentSelection:', currentSelection);
 
       if (currentSelection.length === 0) {
-        showError('No objects selected');
+        showError('No images selected');
         return;
       }
 
@@ -952,7 +952,7 @@
           <div class="empty-state">
             <div class="empty-icon">📷</div>
             <div>No images added yet</div>
-            <div style="font-size: 10px; margin-top: 4px;">Select objects in Figma and click "Add Selected Objects"</div>
+            <div style="font-size: 10px; margin-top: 4px;">Select images in Figma and click "Add Selected Images"</div>
           </div>
         `;
         return;

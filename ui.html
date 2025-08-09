@@ -1213,7 +1213,6 @@
               type: blob.type 
             });
 
-            // Compress single image using same logic as multi-image
             let compressedBytes;
             if (result.config.format === 'jpg') {
               const options = {
@@ -1304,7 +1303,7 @@
           return;
         }
 
-        // MULTIPLE IMAGES - Create ZIP
+        // MULTIPLE IMAGES
         const compressedImages = [];
         let processed = 0;
 
@@ -1468,7 +1467,6 @@
     }
 
     async function downloadAsZip(images) {
-      // Simple ZIP creation
       const zip = new JSZip();
       images.forEach(image => {
         zip.file(image.filename, image.data);

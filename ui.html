@@ -886,6 +886,7 @@
       updateImagesList();
       updateCompressButton();
       updateSelectionStatus();
+      updateCompressButton()
     }
 
     function updateImageConfig(nodeId, field, value) {
@@ -925,18 +926,6 @@
       
       config.scale = parseFloat(value);
       console.log(`Updated scale for ${nodeId} to ${config.scale}x`);
-    }
-
-    function updateScaleFromInput(nodeId, value) {
-      const config = imageConfigs.find(c => c.nodeId === nodeId);
-      if (!config) return;
-      
-      // Extract number from input (remove 'x' if present)
-      const numValue = parseFloat(value.replace('x', ''));
-      if (!isNaN(numValue) && numValue > 0) {
-        config.scale = numValue;
-        updateImagesList(); // Refresh to show updated value
-      }
     }
 
     function editCustomScale(nodeId) {
@@ -1053,26 +1042,6 @@
       }, '*');
     }
 
-    function applyPresetToImage(nodeId, presetName) {
-      const config = imageConfigs.find(c => c.nodeId === nodeId);
-      if (!config) return;
-
-      const presets = {
-        'mobile': { scale: 3, format: 'jpg', quality: 75 },
-        'tablet': { scale: 2, format: 'jpg', quality: 75 },
-        'room-title': { scale: 1, format: 'png', quality: 75 },
-        'store-preview': { scale: 2, format: 'png', quality: 75 }
-      };
-
-      if (presets[presetName]) {
-        const preset = presets[presetName];
-        config.scale = preset.scale;
-        config.format = preset.format;
-        config.quality = preset.quality;
-        updateImagesList(); // Refresh the UI
-      }
-    }
-
     function getPresetForConfig(config) {
       const presets = {
         'mobile': { scale: 3, format: 'jpg', quality: 75 },
@@ -1143,21 +1112,6 @@
       
       countEl.textContent = imageConfigs.length;
       btn.disabled = imageConfigs.length === 0;
-    }
-
-    function adjustPluginHeight() {
-      const baseHeight = 620;
-      const itemHeight = 60; // Compact item height
-      const maxItems = Math.max(0, imageConfigs.length - 3);
-      const newHeight = baseHeight + (maxItems * itemHeight);
-      
-      // Send resize message to Figma
-      parent.postMessage({
-        pluginMessage: {
-          type: 'resize-plugin',
-          height: newHeight
-        }
-      }, '*');
     }
 
     function applyPreset(presetName) {
@@ -1232,22 +1186,6 @@
       URL.revokeObjectURL(url);
     }
 
-    function updateScaleFromInput(nodeId, value) {
-      const config = imageConfigs.find(c => c.nodeId === nodeId);
-      if (!config) return;
-      
-      // Extract number from input (remove 'x' if present)
-      const numValue = parseFloat(value.replace('x', ''));
-      if (!isNaN(numValue) && numValue > 0 && numValue <= 10) {
-        config.scale = numValue;
-        // Update input to show clean format
-        document.getElementById(`scale-input-${nodeId}`).value = `${numValue}x`;
-      } else {
-        // Reset to current value if invalid
-        document.getElementById(`scale-input-${nodeId}`).value = `${config.scale}x`;
-      }
-    }
-
     function showAllScaleOptions(nodeId) {
       const input = document.getElementById(`scale-input-${nodeId}`);
       
@@ -1289,7 +1227,7 @@
               const options = {
                 maxSizeMB: 0.5,
                 maxWidthOrHeight: 1920,
-                useWebWorker: false,
+                useWebWorker: true,
                 quality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
                 initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
                 alwaysKeepResolution: false,
@@ -1313,20 +1251,24 @@
               let maxDimension;
               if (figmaScale >= 3.0) {
                 maxDimension = 6144;
-              } else if (figmaScale >= 2.5) {
+              } 
+              else if (figmaScale >= 2.5) {
                 maxDimension = 5120;
-              } else if (figmaScale >= 2.0) {
+              } 
+              else if (figmaScale >= 2.0) {
                 maxDimension = 4096;
-              } else if (figmaScale >= 1.5) {
+              } 
+              else if (figmaScale >= 1.5) {
                 maxDimension = 3072;
-              } else {
+              } 
+              else {
                 maxDimension = 2048;
               }
 
               const ultraOptions = {
                 maxSizeMB: targetSizeMB,
                 maxWidthOrHeight: maxDimension,
-                useWebWorker: false,
+                useWebWorker: true,
                 quality: Math.max(0.4, pngQuality * 0.7),
                 fileType: 'image/png',
                 preserveExif: false,
@@ -1351,12 +1293,14 @@
             showProgress(100, 'Complete!');
             hideProgress();
             showSuccess(`Exported ${result.nodeName}`);
-            return; // EXIT
-            
-          } catch (error) {
+            resetCompressButton();
+            return;
+          }
+          catch (error) {
             console.error('Single image compression failed:', error);
             showError(`Failed to compress ${result.nodeName}: ${error.message}`);
             hideProgress();
+            resetCompressButton();
             return;
           }
         }
@@ -1401,7 +1345,7 @@
               const options = {
                 maxSizeMB: 0.5,
                 maxWidthOrHeight: 1920,
-                useWebWorker: false,
+                useWebWorker: true,
                 quality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
                 initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
                 alwaysKeepResolution: false,
@@ -1444,7 +1388,7 @@
               const ultraOptions = {
                 maxSizeMB: targetSizeMB,
                 maxWidthOrHeight: maxDimension,
-                useWebWorker: false,
+                useWebWorker: true,
                 quality: Math.max(0.4, pngQuality * 0.7),
                 fileType: 'image/png',
                 preserveExif: false,
@@ -1461,7 +1405,7 @@
                   const smartOptions = {
                     maxSizeMB: targetSizeMB * 0.8,
                     maxWidthOrHeight: maxDimension,
-                    useWebWorker: false,
+                    useWebWorker: true,
                     quality: Math.max(0.3, pngQuality * 0.6),
                     fileType: 'image/png',
                     preserveExif: false,
@@ -1504,6 +1448,7 @@
               originalSize: result.originalBytes.length,
               compressedSize: result.originalBytes.length
             });
+            resetCompressButton();
           }
           processed++;
           showProgress(50 + (processed / results.length) * 50, `Processed: ${result.nodeName}`);
@@ -1520,11 +1465,13 @@
         await downloadAsZip(compressedImages);
         hideProgress();
         showSuccess(`Successfully processed ${compressedImages.length} image${compressedImages.length === 1 ? '' : 's'}!`);
-        
-      } catch (error) {
+        resetCompressButton();
+      } 
+      catch (error) {
         console.error('Processing failed:', error);
         showError('Processing failed: ' + error.message);
         hideProgress();
+        resetCompressButton();
       }
     }
 
@@ -1582,6 +1529,13 @@
       }
     }
 
+    function resetCompressButton() {
+      const btn = document.getElementById('compressBtn');
+      const countEl = document.getElementById('variantCount');
+      btn.disabled = imageConfigs.length === 0;
+      btn.textContent = `Compress & Export (${imageConfigs.length} variant${imageConfigs.length === 1 ? '' : 's'})`;
+    }
+
     function showSuccess(message) {
       // Temporarily show success in the error element with different styling
       const errorEl = document.getElementById('errorMessage');
@@ -1616,20 +1570,7 @@
     // Load JSZip on page load
     loadJSZip().catch(console.error);
 
-    function updateScaleFromInput(nodeId, value) {
-      console.log('Scale input updated:', nodeId, value);
-      const config = imageConfigs.find(c => c.nodeId === nodeId);
-      if (!config) return;
-      
-      const numValue = parseFloat(value.replace('x', ''));
-      if (!isNaN(numValue) && numValue > 0 && numValue <= 10) {
-        config.scale = numValue;
-        document.getElementById(`scale-input-${nodeId}`).value = `${numValue}x`;
-      } else {
-        document.getElementById(`scale-input-${nodeId}`).value = `${config.scale}x`;
-      }
-    }
-    console.log('🚀 SCRIPT LOADED - Testing event listener setup');
+    console.log(' SCRIPT LOADED - Testing event listener setup');
 
     // Test if elements exist
     setTimeout(() => {
@@ -1653,14 +1594,16 @@
       const config = imageConfigs.find(c => c.nodeId === nodeId);
       if (!config) return;
       
-      // Extract number from text (remove 'x' if present)
+      // Extract number from text
       const numValue = parseFloat(value.replace('x', ''));
       if (!isNaN(numValue) && numValue > 0 && numValue <= 10) {
         config.scale = numValue;
         // Update the input to show clean format
         document.getElementById(`scale-input-${nodeId}`).value = `${numValue}x`;
         console.log('✅ Scale updated to:', numValue);
-      } else {
+        updateImagesList()
+      } 
+      else {
         // Reset to current value if invalid
         document.getElementById(`scale-input-${nodeId}`).value = `${config.scale}x`;
         console.log('❌ Invalid scale value, reset to:', config.scale);

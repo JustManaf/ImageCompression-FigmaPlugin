@@ -698,7 +698,7 @@
       <div class="empty-state">
         <div class="empty-icon">📷</div>
         <div>No images added yet</div>
-        <div style="font-size: 10px; margin-top: 4px;">Select images in Figma and click "Add Selected images"</div>
+        <div style="font-size: 10px; margin-top: 4px;">Select images in Figma and click "Add Selected Images"</div>
       </div>
     </div>
   </div>
@@ -824,7 +824,7 @@
       } else if (currentCount > 0) {
         // If no images in list but current selection exists
         statusEl.className = 'selection-status has-selection';
-        statusEl.textContent = `${currentCount} object${currentCount === 1 ? '' : 's'} selected`;
+        statusEl.textContent = `${currentCount} image${currentCount === 1 ? '' : 's'} selected`;
         addBtn.disabled = false;
       } else {
         // No images in list and no current selection

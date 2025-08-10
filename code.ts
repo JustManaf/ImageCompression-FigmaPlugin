@@ -17,6 +17,7 @@ function sendSelectionToUI() {
     height: 'height' in node ? node.height : 0,
     hasImageFill: hasImageFill(node)
   }));
+  
   // Remember selection in client storage
   figma.clientStorage.setAsync('savedSelection', selectionData.map(node => node.id));
 

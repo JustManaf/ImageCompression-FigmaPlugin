@@ -650,13 +650,10 @@
       background: var(--figma-color-bg-hover);
     }
 
-
     .scale-input-wrapper {
       position: relative;
       width: 60px;
     }
-
-
   </style>
 </head>
 <body>
@@ -994,7 +991,6 @@
             </datalist>
           </div>
         </div>
-
           <div class="format-control">
             <label class="control-label-small">Format</label>
             <select class="control-select-small" onchange="updateImageConfig('${config.nodeId}', 'format', this.value)">
@@ -1072,7 +1068,7 @@
       const config = imageConfigs.find(c => c.nodeId === nodeId);
       if (!config) return;
       
-      // Extract number from text (remove 'x' if present)
+      // Extract number from text
       const numValue = parseFloat(value.replace('x', ''));
       if (!isNaN(numValue) && numValue > 0 && numValue <= 10) {
         config.scale = numValue;
@@ -1126,7 +1122,7 @@
         }
       });
 
-      // CLEAR SELECTIONS after applying preset
+      // Clear selections after applying preset
       selectedImages.clear();
 
       // Refresh the UI
@@ -1159,8 +1155,8 @@
             imageConfigs: imageConfigs
           }
         }, '*');
-        
-      } catch (error) {
+      }
+      catch (error) {
         console.error('Export initiation failed:', error);
         showError('Export failed: ' + error.message);
         btn.disabled = false;
@@ -1226,7 +1222,8 @@
               };
               const compressedFile = await imageCompression(file, options);
               compressedBytes = await compressedFile.arrayBuffer();
-            } else if (result.config.format === 'png') {
+            } 
+            else if (result.config.format === 'png') {
               // PNG compression with same aggressive logic
               const pngQuality = result.config.quality / 100;
               const originalSizeMB = file.size / (1024 * 1024);
@@ -1266,7 +1263,6 @@
                 alwaysKeepResolution: true,
                 maxIteration: 30
               };
-
               const compressedFile = await imageCompression(file, ultraOptions);
               compressedBytes = await compressedFile.arrayBuffer();
             }
@@ -1280,7 +1276,6 @@
             a.download = `${result.nodeName}@${result.config.scale}x_${result.config.quality}.${result.config.format}`;
             a.click();
             URL.revokeObjectURL(url);
-
             showProgress(100, 'Complete!');
             hideProgress();
             showSuccess(`Exported ${result.nodeName}`);
@@ -1365,17 +1360,21 @@
               let maxDimension;
               if (figmaScale >= 3.0) {
                 maxDimension = 6144;
-              } else if (figmaScale >= 2.5) {
+              }
+              else if (figmaScale >= 2.5) {
                 maxDimension = 5120;
-              } else if (figmaScale >= 2.0) {
+              }
+              else if (figmaScale >= 2.0) {
                 maxDimension = 4096;
-              } else if (figmaScale >= 1.5) {
+              }
+              else if (figmaScale >= 1.5) {
                 maxDimension = 3072;
-              } else {
+              }
+              else {
                 maxDimension = 2048;
               }
 
-              // Ultra aggressive compression options
+              // More aggressive compression options
               const ultraOptions = {
                 maxSizeMB: targetSizeMB,
                 maxWidthOrHeight: maxDimension,
@@ -1409,7 +1408,8 @@
                     compressedBytes = await smartFile.arrayBuffer();
                   }
                 }
-              } catch (error) {
+              }
+              catch (error) {
                 console.error('PNG Ultra compression failed:', error);
                 throw error;
               }
@@ -1548,7 +1548,6 @@
           resolve();
           return;
         }
-        
         const script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js';
         script.onload = ( ) => resolve();
@@ -1570,12 +1569,11 @@
       buttons.forEach((btn, index) => {
         console.log(`Button ${index}:`, btn.className, btn.getAttribute('data-node-id'));
       });
-      
     }, 1000);
 
     // Direct button click handler as backup
     function handleDropdownClick(nodeId) {
-      console.log('🔥 DIRECT FUNCTION CALLED:', nodeId);
+      console.log('DIRECT FUNCTION CALLED:', nodeId);
       toggleScaleDropdown(nodeId);
     }
 
@@ -1590,13 +1588,13 @@
         config.scale = numValue;
         // Update the input to show clean format
         document.getElementById(`scale-input-${nodeId}`).value = `${numValue}x`;
-        console.log('✅ Scale updated to:', numValue);
+        console.log('Scale updated to:', numValue);
         updateImagesList()
       } 
       else {
         // Reset to current value if invalid
         document.getElementById(`scale-input-${nodeId}`).value = `${config.scale}x`;
-        console.log('❌ Invalid scale value, reset to:', config.scale);
+        console.log('Invalid scale value, reset to:', config.scale);
       }
     }
   </script>

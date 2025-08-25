@@ -654,6 +654,37 @@
       position: relative;
       width: 60px;
     }
+
+    .universal-controls {
+      background: var(--figma-color-bg-secondary);
+      border: 1px solid var(--figma-color-border);
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 8px;
+    }
+
+    .universal-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .universal-label {
+      font-size: 10px;
+      color: var(--figma-color-text-secondary);
+      font-weight: normal;
+    }
+
+    .universal-hint {
+      font-size: 10px;
+      color: var(--figma-color-text-secondary);
+      font-style: italic;
+    }
+
+    .quality-section .universal-hint {
+      text-align: center;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -691,6 +722,27 @@
   </button>
   <div class="images-section">
     <div class="section-title">Images to Compress (<span id="imageCount">0</span>)</div>
+
+  <div class="universal-controls">
+    <div class="universal-control">
+      <label class="control-label-small">Universal Scale</label>
+      <select class="figma-scale-select" 
+              id="universal-scale"
+              onchange="applyUniversalScale(this.value)">
+        <option value="">Select scale...</option>
+        <option value="0.5">0.5x</option>
+        <option value="1">1x</option>
+        <option value="1.5">1.5x</option>
+        <option value="2">2x</option>
+        <option value="2.5">2.5x</option>
+        <option value="3">3x</option>
+        <option value="4">4x</option>
+      </select>
+      <span class="universal-hint" id="scale-hint">Apply to all images</span>
+    </div>
+  </div>
+
+
     <div id="imagesList" class="images-list">
       <div class="empty-state">
         <div class="empty-icon">📷</div>
@@ -699,8 +751,10 @@
       </div>
     </div>
   </div>
+
+  <!-- Old quality-section
   <div class="quality-section">
-    <div class="section-title">Compression Quality</div>
+    <div class="section-title">Universal Control</div>
     <div class="quality-control">
       <div class="quality-label">JPG</div>
       <input type="range" id="jpgQuality" class="quality-slider" min="10" max="100" value="75">
@@ -712,6 +766,27 @@
       <div id="pngQualityValue" class="quality-value">90%</div>
     </div>
   </div>
+-->
+
+<!-- New quality-section -->
+<div class="quality-section">
+  <div class="section-title">Universal Control</div>
+  <div class="quality-control">
+    <div class="quality-label">JPG</div>
+    <input type="range" id="jpgQuality" class="quality-slider" min="10" max="100" value="75" 
+           oninput="updateUniversalQuality('jpg', this.value)">
+    <div id="jpgQualityValue" class="quality-value">75%</div>
+  </div>
+  <div class="quality-control">
+    <div class="quality-label">PNG</div>
+    <input type="range" id="pngQuality" class="quality-slider" min="10" max="100" value="90"
+           oninput="updateUniversalQuality('png', this.value)">
+    <div id="pngQualityValue" class="quality-value">90%</div>
+  </div>
+  <div class="universal-hint" id="quality-hint">Apply to all images</div>
+</div>
+
+
   <div id="progressSection" class="progress-section">
     <div class="progress-bar">
       <div id="progressFill" class="progress-fill"></div>
@@ -929,12 +1004,16 @@
     }
 
     function updateImageConfigs() {
-      // Update all configs with current quality settings
+      // Only update configs that haven't been individually set
       imageConfigs.forEach(config => {
-        config.quality = config.format === 'jpg' ? jpgQuality : pngQuality;
+        // Don't override if this image has a custom quality setting
+        if (!config.hasCustomQuality) {
+          config.quality = config.format === 'jpg' ? jpgQuality : pngQuality;
+        }
       });
       updateImagesList();
     }
+
 
     function updateImagesList() {
       const listEl = document.getElementById('imagesList');
@@ -1012,6 +1091,9 @@
       `).join('');
       console.log('HTML generated successfully');
       adjustPluginHeight();
+
+      updateScaleHint();
+      updateQualityHint();
     }
 
     function adjustPluginHeight() {
@@ -1211,9 +1293,27 @@
 
             let compressedBytes;
             if (result.config.format === 'jpg') {
+                const figmaScale = result.config.scale;
+                let maxDimension;
+                if (figmaScale >= 3.0) {
+                  maxDimension = 6144;
+                } 
+                else if (figmaScale >= 2.5) {
+                  maxDimension = 5120;
+                } 
+                else if (figmaScale >= 2.0) {
+                  maxDimension = 4096;
+                } 
+                else if (figmaScale >= 1.5) {
+                  maxDimension = 3072;
+                } 
+                else {
+                  maxDimension = 2048;
+                }
+
               const options = {
                 maxSizeMB: 0.5,
-                maxWidthOrHeight: 1920,
+                maxWidthOrHeight: maxDimension,
                 useWebWorker: true,
                 quality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
                 initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
@@ -1222,7 +1322,7 @@
               };
               const compressedFile = await imageCompression(file, options);
               compressedBytes = await compressedFile.arrayBuffer();
-            } 
+            }
             else if (result.config.format === 'png') {
               // PNG compression with same aggressive logic
               const pngQuality = result.config.quality / 100;
@@ -1327,14 +1427,33 @@
             // Format specific compression options
             let compressedBytes;
             if (result.config.format === 'jpg') {
+
+              const figmaScale = result.config.scale;
+              let maxDimension;
+              if (figmaScale >= 3.0) {
+                maxDimension = 6144;
+              }
+              else if (figmaScale >= 2.5) {
+                maxDimension = 5120;
+              }
+              else if (figmaScale >= 2.0) {
+                maxDimension = 4096;
+              }
+              else if (figmaScale >= 1.5) {
+                maxDimension = 3072;
+              }
+              else {
+                maxDimension = 2048;
+              }
+
               // JPG compression
               const options = {
                 maxSizeMB: 0.5,
-                maxWidthOrHeight: 1920,
+                maxWidthOrHeight: maxDimension,
                 useWebWorker: true,
                 quality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
                 initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
-                alwaysKeepResolution: false,
+                alwaysKeepResolution: true,
                 fileType: 'image/jpeg'
               };
               
@@ -1596,6 +1715,96 @@
         document.getElementById(`scale-input-${nodeId}`).value = `${config.scale}x`;
         console.log('Invalid scale value, reset to:', config.scale);
       }
+    }
+
+    function applyUniversalScale(scaleValue) {
+      if (!scaleValue) return;
+      
+      const scale = parseFloat(scaleValue);
+      const targetImages = getTargetImages();
+      
+      console.log(`Applying universal scale ${scale}x to:`, targetImages);
+      
+      targetImages.forEach(nodeId => {
+        const config = imageConfigs.find(c => c.nodeId === nodeId);
+        if (config) {
+          config.scale = scale;
+        }
+      });
+      
+      updateImagesList();
+      updateScaleHint();
+      
+      // Reset the dropdown
+      document.getElementById('universal-scale').value = '';
+    }
+
+    function updateUniversalQuality(format, value) {
+      const quality = parseInt(value);
+      const targetImages = getTargetImages();
+      
+      console.log(`Applying universal ${format.toUpperCase()} quality ${quality}% to:`, targetImages);
+      
+      // Update slider display
+      if (format === 'jpg') {
+        document.getElementById('jpgQualityValue').textContent = quality + '%';
+      } else {
+        document.getElementById('pngQualityValue').textContent = quality + '%';
+      }
+      
+      // Apply ONLY to target images (don't update global variables)
+      targetImages.forEach(nodeId => {
+        const config = imageConfigs.find(c => c.nodeId === nodeId);
+        if (config && config.format === format) {
+          config.quality = quality;
+          config.hasCustomQuality = true;  // ← MARK AS CUSTOM
+        }
+      });
+      // Update ONLY the affected images, not all
+      updateImagesList();
+      updateQualityHint();
+    }
+
+
+    function getTargetImages() {
+      // If no images are selected, return all images
+      if (selectedImages.size === 0) {
+        return imageConfigs.map(config => config.nodeId);
+      }
+      
+      // Return only selected images
+      return Array.from(selectedImages);
+    }
+
+    function updateScaleHint() {
+      const hint = document.getElementById('scale-hint');
+      if (selectedImages.size === 0) {
+        hint.textContent = `Apply to all ${imageConfigs.length} images`;
+      } else {
+        hint.textContent = `Apply to ${selectedImages.size} selected images`;
+      }
+    }
+
+    function updateQualityHint() {
+      const hint = document.getElementById('quality-hint');
+      if (selectedImages.size === 0) {
+        hint.textContent = `Apply to all ${imageConfigs.length} images`;
+      } else {
+        hint.textContent = `Apply to ${selectedImages.size} selected images`;
+      }
+    }
+
+    // Update hints when selection changes
+    function updateImageSelection(nodeId, isSelected) {
+      if (isSelected) {
+        selectedImages.add(nodeId);
+      } else {
+        selectedImages.delete(nodeId);
+      }
+      
+      console.log('Selected images:', Array.from(selectedImages));
+      updateScaleHint();
+      updateQualityHint();
     }
   </script>
 </body>

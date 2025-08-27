@@ -19,7 +19,6 @@
       background: var(--figma-color-bg);
       padding: 16px;
       width: 320px;
-      max-width: 320px;
       overflow-x: hidden;
       box-sizing: border-box;
     }
@@ -35,6 +34,7 @@
     }
 
     .selection-status {
+      max-width: 285px;
       padding: 8px 12px;
       border-radius: 6px;
       font-size: 11px;
@@ -55,6 +55,7 @@
 
     .button {
       width: 100%;
+      max-width: 280px;
       padding: 8px 12px;
       border: 1px solid var(--figma-color-border);
       border-radius: 6px;
@@ -100,7 +101,7 @@
       border-radius: 6px;
       background: var(--figma-color-bg);
       width: 100%;
-      max-width: 320px;
+      max-width: 280px;
       overflow-x: hidden;
       overflow-y: visible;
     }
@@ -237,6 +238,7 @@
 
     .control-select-small {
       width: 100%;
+      max-width: 51px;
       padding: 3px 4px;
       border: 1px solid var(--figma-color-border);
       border-radius: 3px;
@@ -302,6 +304,9 @@
       font-size: 10px;
       cursor: pointer;
       text-align: center;
+      width: 100%;
+      max-width: 130px;
+      max-height: 40px;
     }
 
     .preset-btn:hover {
@@ -327,6 +332,8 @@
       align-items: center;
       gap: 8px;
       margin-bottom: 8px;
+      width: 100%;
+      max-width: 285px;
     }
 
     .quality-label {
@@ -373,7 +380,7 @@
 
     .progress-bar {
       width: 100%;
-      max-width: 280px;
+      max-width: 260px;
       height: 6px;
       background: var(--figma-color-border);
       border-radius: 3px;
@@ -529,16 +536,16 @@
     }
 
     .figma-scale-select {
-      width: 60px;
+      width: 70%;
+      max-width: 50px;
       height: 24px;
-      padding: 2px 4px;
       border: 1px solid var(--figma-color-border);
-      border-radius: 4px;
+      border-radius: 5px;
       background: var(--figma-color-bg);
       color: var(--figma-color-text);
-      font-size: 11px;
-      outline: none;
-      cursor: pointer;
+      font-size: 10px;
+      position:relative;
+      display: flex;
     }
 
     .figma-scale-select:focus {
@@ -553,6 +560,7 @@
 
     .figma-scale-input {
       width: 100%;
+      max-width: 50px;
       height: 24px;
       padding: 2px 6px;
       border: 1px solid var(--figma-color-border);
@@ -592,20 +600,6 @@
       border-radius: 2px;
     }
 
-    .figma-dropdown-menu {
-      position: absolute;
-      top: 26px;
-      left: 0;
-      right: 0;
-      background: var(--figma-color-bg);
-      border: 1px solid var(--figma-color-border);
-      border-radius: 4px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      z-index: 9999;
-      max-height: 120px;
-      overflow-y: auto;
-    }
-
     .figma-dropdown-item {
       padding: 6px 8px;
       font-size: 11px;
@@ -639,51 +633,47 @@
       overflow-y: auto;
     }
 
-    .figma-dropdown-item {
-      padding: 6px 8px;
-      font-size: 11px;
-      cursor: pointer;
-      color: var(--figma-color-text);
-    }
-
-    .figma-dropdown-item:hover {
-      background: var(--figma-color-bg-hover);
-    }
-
     .scale-input-wrapper {
       position: relative;
       width: 60px;
     }
 
-    .universal-controls {
-      background: var(--figma-color-bg-secondary);
-      border: 1px solid var(--figma-color-border);
-      border-radius: 6px;
-      padding: 8px;
-      margin-bottom: 8px;
-    }
-
-    .universal-control {
+    .universal-controls-row {
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .universal-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .universal-control select {
+      margin-left: auto;
     }
 
     .universal-label {
-      font-size: 10px;
+      font-size: 9.4px;
       color: var(--figma-color-text-secondary);
       font-weight: normal;
     }
 
-    .universal-hint {
-      font-size: 10px;
+    .unilabel2 {
+      font-size: 11px;
       color: var(--figma-color-text-secondary);
-      font-style: italic;
+      font-weight: normal;
+      margin-bottom: 10px;
+      display: flex;
     }
 
-    .quality-section .universal-hint {
-      text-align: center;
-      margin-top: 4px;
+    .universal-hint {
+      font-size: 10px;
+      color: rgb(236, 198, 92);
+      font-style: italic;
     }
   </style>
 </head>
@@ -722,27 +712,6 @@
   </button>
   <div class="images-section">
     <div class="section-title">Images to Compress (<span id="imageCount">0</span>)</div>
-
-  <div class="universal-controls">
-    <div class="universal-control">
-      <label class="control-label-small">Universal Scale</label>
-      <select class="figma-scale-select" 
-              id="universal-scale"
-              onchange="applyUniversalScale(this.value)">
-        <option value="">Select scale...</option>
-        <option value="0.5">0.5x</option>
-        <option value="1">1x</option>
-        <option value="1.5">1.5x</option>
-        <option value="2">2x</option>
-        <option value="2.5">2.5x</option>
-        <option value="3">3x</option>
-        <option value="4">4x</option>
-      </select>
-      <span class="universal-hint" id="scale-hint">Apply to all images</span>
-    </div>
-  </div>
-
-
     <div id="imagesList" class="images-list">
       <div class="empty-state">
         <div class="empty-icon">📷</div>
@@ -752,28 +721,34 @@
     </div>
   </div>
 
-  <!-- Old quality-section
-  <div class="quality-section">
-    <div class="section-title">Universal Control</div>
-    <div class="quality-control">
-      <div class="quality-label">JPG</div>
-      <input type="range" id="jpgQuality" class="quality-slider" min="10" max="100" value="75">
-      <div id="jpgQualityValue" class="quality-value">75%</div>
-    </div>
-    <div class="quality-control">
-      <div class="quality-label">PNG</div>
-      <input type="range" id="pngQuality" class="quality-slider" min="10" max="100" value="90">
-      <div id="pngQualityValue" class="quality-value">90%</div>
-    </div>
-  </div>
--->
-
-<!-- New quality-section -->
 <div class="quality-section">
-  <div class="section-title">Universal Control</div>
+<div class="section-title universal-title">
+    Universal Control <span class="universal-hint" id="universal-hint">Apply to all images</span>
+  </div>
+  <div class="universal-controls-row">
+    <label class="universal-label" for="universal-scale">Universal Scale</label>
+    <select class="figma-scale-select" id="universal-scale" onchange="applyUniversalScale(this.value)">
+      <option value="">Select scale...</option>
+      <option value="0.5">0.5x</option>
+      <option value="1">1x</option>
+      <option value="1.5">1.5x</option>
+      <option value="2">2x</option>
+      <option value="2.5">2.5x</option>
+      <option value="3">3x</option>
+      <option value="4">4x</option>
+    </select>
+    <label class="universal-label" for="universal-format">Universal Format</label>
+    <select class="figma-scale-select" id="universal-format" onchange="applyUniversalFormat(this.value)">
+      <option value="">Select format...</option>
+      <option value="jpg">JPG</option>
+      <option value="png">PNG</option>
+    </select>
+  </div>
+  
+  <label class="unilabel2">Universal Quality</label>
   <div class="quality-control">
     <div class="quality-label">JPG</div>
-    <input type="range" id="jpgQuality" class="quality-slider" min="10" max="100" value="75" 
+    <input type="range" id="jpgQuality" class="quality-slider" min="10" max="100" value="75"
            oninput="updateUniversalQuality('jpg', this.value)">
     <div id="jpgQualityValue" class="quality-value">75%</div>
   </div>
@@ -783,10 +758,7 @@
            oninput="updateUniversalQuality('png', this.value)">
     <div id="pngQualityValue" class="quality-value">90%</div>
   </div>
-  <div class="universal-hint" id="quality-hint">Apply to all images</div>
 </div>
-
-
   <div id="progressSection" class="progress-section">
     <div class="progress-bar">
       <div id="progressFill" class="progress-fill"></div>
@@ -806,16 +778,6 @@
     let pngQuality = 90;
     let selectedImages = new Set();
 
-    // Update image selection
-    function updateImageSelection(nodeId, isSelected) {
-      if (isSelected) {
-        selectedImages.add(nodeId);
-      } else {
-        selectedImages.delete(nodeId);
-      }
-      console.log('Selected images:', Array.from(selectedImages));
-    }
-
     // Compression presets
     const PRESETS = {
       'mobile': { scale: 3, format: 'jpg', quality: 75, target: '±180KB' },
@@ -824,25 +786,8 @@
       'store-preview': { scale: 2, format: 'png', quality: 75, target: '' }
     };
 
-    // Initialize UI
-    document.addEventListener('DOMContentLoaded', function() {
-      // Setup quality sliders
-      const jpgSlider = document.getElementById('jpgQuality');
-      const pngSlider = document.getElementById('pngQuality');
-      const jpgValue = document.getElementById('jpgQualityValue');
-      const pngValue = document.getElementById('pngQualityValue');
-
-      jpgSlider.addEventListener('input', function() {
-        jpgQuality = parseInt(this.value);
-        jpgValue.textContent = jpgQuality + '%';
-        updateImageConfigs();
-      });
-
-      pngSlider.addEventListener('input', function() {
-        pngQuality = parseInt(this.value);
-        pngValue.textContent = pngQuality + '%';
-        updateImageConfigs();
-      });
+      // Initialize UI
+      document.addEventListener('DOMContentLoaded', function() {
 
       // Request initial selection
       sendMessage({ type: 'get-selection' });
@@ -1003,18 +948,6 @@
       }
     }
 
-    function updateImageConfigs() {
-      // Only update configs that haven't been individually set
-      imageConfigs.forEach(config => {
-        // Don't override if this image has a custom quality setting
-        if (!config.hasCustomQuality) {
-          config.quality = config.format === 'jpg' ? jpgQuality : pngQuality;
-        }
-      });
-      updateImagesList();
-    }
-
-
     function updateImagesList() {
       const listEl = document.getElementById('imagesList');
       const countEl = document.getElementById('imageCount');
@@ -1092,8 +1025,7 @@
       console.log('HTML generated successfully');
       adjustPluginHeight();
 
-      updateScaleHint();
-      updateQualityHint();
+      updateUniversalHint();
     }
 
     function adjustPluginHeight() {
@@ -1185,17 +1117,11 @@
     }
 
     function applyPreset(presetName) {
-      // Check if any images are selected
-      if (selectedImages.size === 0) {
-        showError('Please select the images you want to apply this preset to.');
-        return;
-      }
-
       const preset = PRESETS[presetName];
       if (!preset) return;
 
-      // Apply preset only to selected images
-      selectedImages.forEach(nodeId => {
+      const targets = getTargetImages();
+      targets.forEach(nodeId => {
         const config = imageConfigs.find(c => c.nodeId === nodeId);
         if (config) {
           config.scale = preset.scale;
@@ -1206,11 +1132,9 @@
 
       // Clear selections after applying preset
       selectedImages.clear();
-
       // Refresh the UI
       updateImagesList();
       updateCompressButton();
-      
       console.log(`Applied ${presetName} preset and cleared selections`);
     }
 
@@ -1732,37 +1656,52 @@
         }
       });
       
-      updateImagesList();
-      updateScaleHint();
-      
+      updateImagesList();      
       // Reset the dropdown
       document.getElementById('universal-scale').value = '';
     }
 
+    function applyUniversalFormat(formatValue) {
+      if (!formatValue) return;
+
+      const targetImages = getTargetImages();
+      console.log(`Applying universal format ${formatValue} to:`, targetImages);
+
+      targetImages.forEach(nodeId => {
+        const config = imageConfigs.find(c => c.nodeId === nodeId);
+        if (config) {
+          config.format = formatValue;
+          config.quality = formatValue === 'jpg' ? jpgQuality : pngQuality;
+        }
+      });
+
+      updateImagesList();
+
+      document.getElementById('universal-format').value = '';
+    }
+
     function updateUniversalQuality(format, value) {
       const quality = parseInt(value);
-      const targetImages = getTargetImages();
-      
-      console.log(`Applying universal ${format.toUpperCase()} quality ${quality}% to:`, targetImages);
-      
-      // Update slider display
       if (format === 'jpg') {
+        jpgQuality = quality;
         document.getElementById('jpgQualityValue').textContent = quality + '%';
       } else {
+        pngQuality = quality;
         document.getElementById('pngQualityValue').textContent = quality + '%';
       }
       
       // Apply ONLY to target images (don't update global variables)
-      targetImages.forEach(nodeId => {
-        const config = imageConfigs.find(c => c.nodeId === nodeId);
-        if (config && config.format === format) {
-          config.quality = quality;
-          config.hasCustomQuality = true;  // ← MARK AS CUSTOM
-        }
+
+      const allOfFormat = imageConfigs.filter(c => c.format === format);
+      const selectedOfFormat = allOfFormat.filter(c => selectedImages.has(c.nodeId));
+      const targets = selectedOfFormat.length > 0 ? selectedOfFormat : allOfFormat;
+
+      targets.forEach(config => {
+        config.quality = quality;
+        config.hasCustomQuality = true;
       });
-      // Update ONLY the affected images, not all
       updateImagesList();
-      updateQualityHint();
+      updateUniversalHint();
     }
 
 
@@ -1776,17 +1715,9 @@
       return Array.from(selectedImages);
     }
 
-    function updateScaleHint() {
-      const hint = document.getElementById('scale-hint');
-      if (selectedImages.size === 0) {
-        hint.textContent = `Apply to all ${imageConfigs.length} images`;
-      } else {
-        hint.textContent = `Apply to ${selectedImages.size} selected images`;
-      }
-    }
-
-    function updateQualityHint() {
-      const hint = document.getElementById('quality-hint');
+    function updateUniversalHint() {
+      const hint = document.getElementById('universal-hint');
+      if (!hint) return;
       if (selectedImages.size === 0) {
         hint.textContent = `Apply to all ${imageConfigs.length} images`;
       } else {
@@ -1805,6 +1736,7 @@
       console.log('Selected images:', Array.from(selectedImages));
       updateScaleHint();
       updateQualityHint();
+      updateUniversalHint();
     }
   </script>
 </body>

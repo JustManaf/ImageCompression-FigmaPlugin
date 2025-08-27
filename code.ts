@@ -2,7 +2,7 @@
 // Show the UI
 figma.showUI(__html__, { 
   width: 320, 
-  height: 620,
+  height: 638,
   themeColors: true 
 });
 

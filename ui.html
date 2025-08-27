@@ -1235,14 +1235,17 @@
                   maxDimension = 2048;
                 }
 
-              const options = {
-                maxSizeMB: 0.5,
-                maxWidthOrHeight: maxDimension,
-                useWebWorker: true,
-                quality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
-                initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
-                alwaysKeepResolution: false,
-                fileType: 'image/jpeg'
+            const jpegQuality = Math.max(0.1, Math.min(0.95, result.config.quality / 100));
+            // scale max size with chosen quality: ~0.25 MB at 100 %
+            const jpegTargetSizeMB = 0.25 * (result.config.quality / 100);
+            const options = {
+              maxSizeMB: jpegTargetSizeMB,
+              maxWidthOrHeight: maxDimension,
+              useWebWorker: true,
+              quality: jpegQuality,
+              fileType: 'image/jpeg',
+              alwaysKeepResolution: false,
+              initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
               };
               const compressedFile = await imageCompression(file, options);
               compressedBytes = await compressedFile.arrayBuffer();
@@ -1263,30 +1266,27 @@
               let maxDimension;
               if (figmaScale >= 3.0) {
                 maxDimension = 6144;
-              } 
-              else if (figmaScale >= 2.5) {
+              } else if (figmaScale >= 2.5) {
                 maxDimension = 5120;
-              } 
-              else if (figmaScale >= 2.0) {
+              } else if (figmaScale >= 2.0) {
                 maxDimension = 4096;
-              } 
-              else if (figmaScale >= 1.5) {
+              } else if (figmaScale >= 1.5) {
                 maxDimension = 3072;
-              } 
-              else {
+              } else {
                 maxDimension = 2048;
               }
 
               const ultraOptions = {
                 maxSizeMB: targetSizeMB,
                 maxWidthOrHeight: maxDimension,
-                useWebWorker: true,
+                useWebWorker: false,
                 quality: Math.max(0.4, pngQuality * 0.7),
                 fileType: 'image/png',
                 preserveExif: false,
                 alwaysKeepResolution: true,
                 maxIteration: 30
               };
+
               const compressedFile = await imageCompression(file, ultraOptions);
               compressedBytes = await compressedFile.arrayBuffer();
             }
@@ -1370,17 +1370,18 @@
                 maxDimension = 2048;
               }
 
-              // JPG compression
-              const options = {
-                maxSizeMB: 0.5,
-                maxWidthOrHeight: maxDimension,
-                useWebWorker: true,
-                quality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
-                initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
-                alwaysKeepResolution: true,
-                fileType: 'image/jpeg'
+            const jpegQuality = Math.max(0.1, Math.min(0.95, result.config.quality / 100));
+            // scale max size with chosen quality: ~0.25 MB at 100 %
+            const jpegTargetSizeMB = 0.25 * (result.config.quality / 100);
+            const options = {
+              maxSizeMB: jpegTargetSizeMB,
+              maxWidthOrHeight: maxDimension,
+              useWebWorker: false,
+              quality: jpegQuality,
+              initialQuality: Math.max(0.1, Math.min(0.95, result.config.quality / 100)),
+              fileType: 'image/jpeg',
+              alwaysKeepResolution: false
               };
-              
               const compressedFile = await imageCompression(file, options);
               compressedBytes = await compressedFile.arrayBuffer();
             }
@@ -1403,25 +1404,21 @@
               let maxDimension;
               if (figmaScale >= 3.0) {
                 maxDimension = 6144;
-              }
-              else if (figmaScale >= 2.5) {
+              } else if (figmaScale >= 2.5) {
                 maxDimension = 5120;
-              }
-              else if (figmaScale >= 2.0) {
+              } else if (figmaScale >= 2.0) {
                 maxDimension = 4096;
-              }
-              else if (figmaScale >= 1.5) {
+              } else if (figmaScale >= 1.5) {
                 maxDimension = 3072;
-              }
-              else {
+              } else {
                 maxDimension = 2048;
               }
 
-              // More aggressive compression options
+              // Ultra-aggressive compression options
               const ultraOptions = {
                 maxSizeMB: targetSizeMB,
                 maxWidthOrHeight: maxDimension,
-                useWebWorker: true,
+                useWebWorker: false,
                 quality: Math.max(0.4, pngQuality * 0.7),
                 fileType: 'image/png',
                 preserveExif: false,
@@ -1438,7 +1435,7 @@
                   const smartOptions = {
                     maxSizeMB: targetSizeMB * 0.8,
                     maxWidthOrHeight: maxDimension,
-                    useWebWorker: true,
+                    useWebWorker: false,
                     quality: Math.max(0.3, pngQuality * 0.6),
                     fileType: 'image/png',
                     preserveExif: false,
@@ -1451,8 +1448,7 @@
                     compressedBytes = await smartFile.arrayBuffer();
                   }
                 }
-              }
-              catch (error) {
+              } catch (error) {
                 console.error('PNG Ultra compression failed:', error);
                 throw error;
               }

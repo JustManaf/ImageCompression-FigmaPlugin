@@ -1236,7 +1236,6 @@
                 }
 
             const jpegQuality = Math.max(0.1, Math.min(0.95, result.config.quality / 100));
-            // scale max size with chosen quality: ~0.25 MB at 100 %
             const jpegTargetSizeMB = 0.25 * (result.config.quality / 100);
             const options = {
               maxSizeMB: jpegTargetSizeMB,
@@ -1580,7 +1579,7 @@
       }, 3000);
     }
 
-    // Load JSZip library properly
+    // Load JSZip library
     function loadJSZip() {
       return new Promise((resolve, reject) => {
         if (window.JSZip) {
@@ -1687,7 +1686,6 @@
       }
       
       // Apply ONLY to target images (don't update global variables)
-
       const allOfFormat = imageConfigs.filter(c => c.format === format);
       const selectedOfFormat = allOfFormat.filter(c => selectedImages.has(c.nodeId));
       const targets = selectedOfFormat.length > 0 ? selectedOfFormat : allOfFormat;
